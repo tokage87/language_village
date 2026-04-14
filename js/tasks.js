@@ -186,9 +186,13 @@ export function renderMedTask(container, task, accent, onWin, onFail) {
 
   checkBtn.addEventListener('click', () => {
     const builtWords = built.map(b => b.word);
-    const correct = task.data.w;
+    const validAnswers = [task.data.w, ...(task.data.alt || [])];
 
-    if (builtWords.length === correct.length && builtWords.every((w, i) => w === correct[i])) {
+    const isCorrect = validAnswers.some(correct =>
+      builtWords.length === correct.length && builtWords.every((w, i) => w === correct[i])
+    );
+
+    if (isCorrect) {
       buildZone.style.background = '#dcfce7';
       buildZone.style.borderColor = '#86efac';
       checkBtn.disabled = true;
