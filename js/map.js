@@ -25,253 +25,319 @@ let prevPos = null;
 export function moveToLocation(id) {
   const state = getState();
   const current = LOCATIONS[state.pos];
-
   if (state.pos === id) return;
   if (!current.adj.includes(id)) return;
   if (state.mp < 1) return;
-
   prevPos = state.pos;
   setState({ pos: id, mp: state.mp - 1 });
   render();
 }
 
-const SVG_NS = 'http://www.w3.org/2000/svg';
-
-function el(tag, attrs, children) {
-  const e = document.createElementNS(SVG_NS, tag);
-  if (attrs) for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
-  if (children) for (const c of children) e.appendChild(c);
+const NS = 'http://www.w3.org/2000/svg';
+function svg(tag, a) {
+  const e = document.createElementNS(NS, tag);
+  if (a) for (const k in a) e.setAttribute(k, a[k]);
   return e;
 }
 
-function buildScenery() {
-  const g = el('g');
+// ── Dense forest border (Kingdom Rush style) ──
+function buildForestBorder(root) {
+  // Shadow layer under canopies
+  const shadowG = svg('g', { opacity: '0.18' });
+  // Trunk layer
+  const trunkG = svg('g');
+  // Dark canopy layer (back)
+  const darkG = svg('g');
+  // Medium canopy layer
+  const medG = svg('g');
+  // Bright canopy highlights
+  const hiG = svg('g');
 
-  // --- Water area near Beach (top) ---
-  g.appendChild(el('ellipse', { cx: '50', cy: '4', rx: '22', ry: '5', fill: '#81d4fa', opacity: '0.4' }));
-  g.appendChild(el('ellipse', { cx: '50', cy: '5', rx: '18', ry: '3', fill: '#4fc3f7', opacity: '0.35' }));
-  // Sand shore
-  g.appendChild(el('ellipse', { cx: '50', cy: '9', rx: '14', ry: '2.5', fill: '#ffe0b2', opacity: '0.5' }));
-
-  // --- Pond water (right-upper area) ---
-  g.appendChild(el('ellipse', { cx: '78', cy: '28', rx: '7', ry: '5', fill: '#81d4fa', opacity: '0.3' }));
-
-  // --- Volcano glow (bottom) ---
-  g.appendChild(el('ellipse', { cx: '50', cy: '92', rx: '8', ry: '5', fill: '#ff8a65', opacity: '0.2' }));
-  g.appendChild(el('ellipse', { cx: '50', cy: '94', rx: '12', ry: '3', fill: '#bf360c', opacity: '0.1' }));
-
-  // --- Forest trees (left cluster) ---
-  const treePositions = [
-    [3, 42], [8, 43], [2, 48], [10, 47], [4, 54], [9, 55], [2, 58], [7, 38],
-    [12, 41], [5, 61], [11, 52],
-  ];
-  for (const [tx, ty] of treePositions) {
-    // trunk
-    g.appendChild(el('rect', { x: String(tx - 0.3), y: String(ty), width: '0.6', height: '2', fill: '#5d4037', rx: '0.2' }));
-    // canopy
-    g.appendChild(el('circle', { cx: String(tx), cy: String(ty - 0.5), r: '2.2', fill: '#2e7d32', opacity: '0.7' }));
+  // Generate dense tree wall along edges
+  // Top edge (skip gap for Beach at x~50)
+  for (let x = -4; x <= 104; x += 3.5) {
+    if (x > 34 && x < 66) continue; // gap for Beach
+    addTreeCluster(x, -2 + Math.sin(x * 0.3) * 2, 1.0);
+    addTreeCluster(x + 1.5, 4 + Math.cos(x * 0.5) * 1.5, 0.85);
+    if (x % 7 < 4) addTreeCluster(x + 0.8, 9 + Math.sin(x) * 1, 0.65);
   }
-  // Extra dense canopy overlay
-  g.appendChild(el('circle', { cx: '6', cy: '50', r: '5', fill: '#1b5e20', opacity: '0.15' }));
-
-  // --- Scattered trees around map ---
-  const scatteredTrees = [
-    [16, 18], [30, 14], [70, 14], [84, 18],
-    [14, 82], [30, 86], [70, 86], [86, 82],
-    [36, 38], [64, 38], [36, 62], [64, 62],
-  ];
-  for (const [tx, ty] of scatteredTrees) {
-    g.appendChild(el('rect', { x: String(tx - 0.2), y: String(ty), width: '0.4', height: '1.5', fill: '#5d4037', rx: '0.1' }));
-    g.appendChild(el('circle', { cx: String(tx), cy: String(ty - 0.3), r: '1.6', fill: '#43a047', opacity: '0.6' }));
+  // Bottom edge (skip gap for Volcano at x~50)
+  for (let x = -4; x <= 104; x += 3.5) {
+    if (x > 34 && x < 66) continue;
+    addTreeCluster(x, 102 + Math.sin(x * 0.3) * 2, 1.0);
+    addTreeCluster(x + 1.5, 96 + Math.cos(x * 0.5) * 1.5, 0.85);
+    if (x % 7 < 4) addTreeCluster(x + 0.8, 91 + Math.sin(x) * 1, 0.65);
+  }
+  // Left edge (dense — Forest is IN the trees)
+  for (let y = -2; y <= 102; y += 3.2) {
+    addTreeCluster(-3 + Math.sin(y * 0.4) * 1.5, y, 1.0);
+    addTreeCluster(3 + Math.cos(y * 0.3) * 1.5, y + 1.5, 0.9);
+    addTreeCluster(8 + Math.sin(y * 0.5) * 1, y + 0.8, 0.7);
+    if (y > 15 && y < 85) addTreeCluster(13 + Math.cos(y * 0.2) * 2, y + 1.2, 0.5);
+  }
+  // Right edge (skip gap area around Tower x~94)
+  for (let y = -2; y <= 102; y += 3.5) {
+    if (y > 38 && y < 62) continue;
+    addTreeCluster(103 + Math.sin(y * 0.4) * 1.5, y, 1.0);
+    addTreeCluster(97 + Math.cos(y * 0.3) * 1.5, y + 1.5, 0.85);
+    if (y % 7 < 4) addTreeCluster(92 + Math.sin(y * 0.5) * 1, y + 0.8, 0.6);
+  }
+  // Corner extra density
+  const corners = [[5, 5], [95, 5], [5, 95], [95, 95]];
+  for (const [cx, cy] of corners) {
+    for (let i = 0; i < 6; i++) {
+      addTreeCluster(cx + (i % 3) * 3 - 3, cy + Math.floor(i / 3) * 3 - 3, 0.9);
+    }
   }
 
-  // --- Bushes / hedges ---
+  function addTreeCluster(tx, ty, scale) {
+    const r = 3.2 * scale;
+    // Shadow
+    shadowG.appendChild(svg('ellipse', {
+      cx: String(tx + 0.5), cy: String(ty + r * 0.7),
+      rx: String(r * 0.9), ry: String(r * 0.4), fill: '#000'
+    }));
+    // Trunk
+    trunkG.appendChild(svg('rect', {
+      x: String(tx - 0.4 * scale), y: String(ty - 0.5 * scale),
+      width: String(0.8 * scale), height: String(2.5 * scale),
+      fill: '#4e342e', rx: '0.3'
+    }));
+    // Dark canopy (back)
+    darkG.appendChild(svg('circle', {
+      cx: String(tx), cy: String(ty - 1 * scale), r: String(r),
+      fill: '#2e7d32'
+    }));
+    // Medium canopy (mid)
+    medG.appendChild(svg('circle', {
+      cx: String(tx - 0.4 * scale), cy: String(ty - 1.5 * scale), r: String(r * 0.8),
+      fill: '#388e3c'
+    }));
+    // Highlight (top)
+    hiG.appendChild(svg('circle', {
+      cx: String(tx + 0.3 * scale), cy: String(ty - 2.2 * scale), r: String(r * 0.55),
+      fill: '#4caf50', opacity: '0.8'
+    }));
+  }
+
+  root.appendChild(shadowG);
+  root.appendChild(trunkG);
+  root.appendChild(darkG);
+  root.appendChild(medG);
+  root.appendChild(hiG);
+}
+
+// ── Terrain details ──
+function buildTerrain(root) {
+  const g = svg('g');
+
+  // Grass color variation patches
+  const patches = [
+    [30, 40, 12, 8, '#8bc34a', 0.15], [60, 35, 10, 7, '#7cb342', 0.12],
+    [45, 60, 14, 9, '#9ccc65', 0.13], [25, 55, 8, 6, '#aed581', 0.14],
+    [70, 60, 11, 7, '#8bc34a', 0.12], [50, 45, 16, 10, '#c5e1a5', 0.1],
+    [35, 78, 9, 6, '#7cb342', 0.15], [65, 80, 10, 7, '#8bc34a', 0.12],
+    [40, 20, 11, 7, '#9ccc65', 0.13], [55, 25, 8, 5, '#aed581', 0.1],
+  ];
+  for (const [px, py, rx, ry, fill, op] of patches) {
+    g.appendChild(svg('ellipse', { cx: String(px), cy: String(py), rx: String(rx), ry: String(ry), fill, opacity: String(op) }));
+  }
+
+  // Small grass tufts (dark dots)
+  const tufts = [
+    [32,33],[42,44],[58,42],[68,55],[38,58],[52,65],[28,48],[72,48],
+    [45,35],[55,55],[33,68],[67,35],[48,78],[53,23],[62,68],[38,22],
+    [43,52],[57,48],[26,62],[74,38],[44,82],[56,18],[34,45],[66,52],
+  ];
+  for (const [tx, ty] of tufts) {
+    g.appendChild(svg('ellipse', { cx: String(tx), cy: String(ty), rx: '0.8', ry: '0.5', fill: '#558b2f', opacity: '0.25' }));
+  }
+
+  // Water at Beach area (top)
+  g.appendChild(svg('ellipse', { cx: '50', cy: '2', rx: '18', ry: '4', fill: '#29b6f6', opacity: '0.5' }));
+  g.appendChild(svg('ellipse', { cx: '50', cy: '4', rx: '15', ry: '3', fill: '#4fc3f7', opacity: '0.4' }));
+  g.appendChild(svg('ellipse', { cx: '50', cy: '6', rx: '12', ry: '2', fill: '#81d4fa', opacity: '0.35' }));
+  // Sand
+  g.appendChild(svg('ellipse', { cx: '50', cy: '9', rx: '10', ry: '3', fill: '#d7ccc8', opacity: '0.6' }));
+  g.appendChild(svg('ellipse', { cx: '50', cy: '10', rx: '8', ry: '2', fill: '#efebe9', opacity: '0.5' }));
+
+  // Pond water
+  g.appendChild(svg('ellipse', { cx: '78', cy: '29', rx: '6', ry: '4', fill: '#4fc3f7', opacity: '0.3' }));
+  g.appendChild(svg('ellipse', { cx: '78', cy: '28', rx: '4', ry: '2.5', fill: '#81d4fa', opacity: '0.25' }));
+
+  // Volcano area (bottom)
+  g.appendChild(svg('ellipse', { cx: '50', cy: '93', rx: '10', ry: '5', fill: '#5d4037', opacity: '0.15' }));
+  g.appendChild(svg('ellipse', { cx: '50', cy: '92', rx: '6', ry: '3', fill: '#bf360c', opacity: '0.12' }));
+  g.appendChild(svg('ellipse', { cx: '50', cy: '91', rx: '3', ry: '1.5', fill: '#ff6e40', opacity: '0.15' }));
+
+  // Rocks scattered
+  const rocks = [
+    [32,50,1.2,0.7],[68,50,1,0.6],[45,38,0.9,0.5],[55,62,1.1,0.6],
+    [25,42,0.8,0.5],[75,58,1,0.6],[42,72,0.9,0.5],[58,28,0.8,0.5],
+    [46,88,1.5,0.9],[54,89,1.3,0.8],[42,94,1.2,0.7],[58,93,1.4,0.8],
+    [48,86,1,0.6],[52,95,1.1,0.7],
+  ];
+  for (const [rx, ry, w, h] of rocks) {
+    g.appendChild(svg('ellipse', { cx: String(rx), cy: String(ry), rx: String(w), ry: String(h), fill: '#90a4ae', opacity: '0.4' }));
+    g.appendChild(svg('ellipse', { cx: String(rx - 0.2), cy: String(ry - 0.2), rx: String(w * 0.6), ry: String(h * 0.6), fill: '#b0bec5', opacity: '0.3' }));
+  }
+
+  // Flowers near Garden
+  const flowers = [
+    [18,24,'#f48fb1'],[20,26,'#ce93d8'],[25,25,'#fff176'],[17,30,'#ef5350'],
+    [26,31,'#ff8a65'],[19,22,'#f06292'],[24,33,'#ba68c8'],[16,27,'#ffee58'],
+  ];
+  for (const [fx, fy, c] of flowers) {
+    g.appendChild(svg('circle', { cx: String(fx), cy: String(fy), r: '0.7', fill: c, opacity: '0.7' }));
+    g.appendChild(svg('circle', { cx: String(fx), cy: String(fy), r: '0.3', fill: '#fff9c4', opacity: '0.6' }));
+  }
+
+  // Magic sparkles near Tower
+  const sparkles = [
+    [90,44],[96,56],[88,48],[92,54],[86,42],[94,46],[90,58],[96,42]
+  ];
+  for (const [sx, sy] of sparkles) {
+    g.appendChild(svg('circle', { cx: String(sx), cy: String(sy), r: '0.4', fill: '#e1bee7', opacity: '0.6' }));
+  }
+
+  // Scattered small bushes near paths
   const bushes = [
-    [18, 50], [82, 50], [50, 18], [50, 82],
-    [35, 25], [65, 25], [35, 75], [65, 75],
-    [28, 50], [72, 50], [50, 35], [50, 65],
-    [15, 35], [85, 35], [15, 65], [85, 65],
+    [36,36],[64,36],[36,64],[64,64],[30,50],[70,50],[50,30],[50,70],
+    [42,40],[58,40],[42,60],[58,60],
   ];
   for (const [bx, by] of bushes) {
-    g.appendChild(el('ellipse', { cx: String(bx), cy: String(by), rx: '1.8', ry: '1.2', fill: '#66bb6a', opacity: '0.5' }));
+    g.appendChild(svg('ellipse', { cx: String(bx), cy: String(by), rx: '1.5', ry: '1', fill: '#66bb6a', opacity: '0.45' }));
+    g.appendChild(svg('ellipse', { cx: String(bx + 0.3), cy: String(by - 0.3), rx: '1', ry: '0.7', fill: '#81c784', opacity: '0.35' }));
   }
 
-  // --- Flowers near Garden ---
-  const flowers = [[18, 24], [26, 25], [19, 31], [25, 32], [20, 22]];
-  const flowerColors = ['#f48fb1', '#ce93d8', '#fff176', '#ef5350', '#ff8a65'];
-  for (let i = 0; i < flowers.length; i++) {
-    const [fx, fy] = flowers[i];
-    g.appendChild(el('circle', { cx: String(fx), cy: String(fy), r: '0.8', fill: flowerColors[i], opacity: '0.7' }));
-  }
-
-  // --- Rocks near Volcano ---
-  const rocks = [[45, 88], [55, 89], [43, 94], [57, 93], [48, 96]];
-  for (const [rx, ry] of rocks) {
-    g.appendChild(el('ellipse', { cx: String(rx), cy: String(ry), rx: '1.5', ry: '1', fill: '#78909c', opacity: '0.5' }));
-  }
-
-  // --- Magic sparkles near Tower/Meadow ---
-  const sparkles = [[90, 44], [96, 56], [82, 68], [74, 76], [92, 42]];
-  for (const [sx, sy] of sparkles) {
-    g.appendChild(el('circle', { cx: String(sx), cy: String(sy), r: '0.5', fill: '#ce93d8', opacity: '0.5' }));
-  }
-
-  // --- Hedge border around map ---
-  const hedgeTop = [];
-  for (let hx = 2; hx < 100; hx += 4) {
-    hedgeTop.push([hx, 1]);
-    hedgeTop.push([hx, 99]);
-  }
-  for (let hy = 4; hy < 98; hy += 4) {
-    hedgeTop.push([1, hy]);
-    hedgeTop.push([99, hy]);
-  }
-  for (const [hx, hy] of hedgeTop) {
-    g.appendChild(el('ellipse', { cx: String(hx), cy: String(hy), rx: '2', ry: '1.4', fill: '#388e3c', opacity: '0.55' }));
-  }
-
-  return g;
+  root.appendChild(g);
 }
 
-function buildPath(x1, y1, x2, y2) {
-  // Create a slightly curved path between two points
-  const mx = (x1 + x2) / 2;
-  const my = (y1 + y2) / 2;
-  // Offset midpoint perpendicular to the line for curve
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const len = Math.sqrt(dx * dx + dy * dy);
-  const off = len * 0.08;
-  const cx = mx + (-dy / len) * off;
-  const cy = my + (dx / len) * off;
+// ── Dirt paths ──
+function buildPaths(root) {
+  const g = svg('g');
+  const drawnEdges = new Set();
 
-  const d = `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`;
+  for (const loc of LOCATIONS) {
+    for (const adjId of loc.adj) {
+      const key = Math.min(loc.id, adjId) + '-' + Math.max(loc.id, adjId);
+      if (drawnEdges.has(key)) continue;
+      drawnEdges.add(key);
+      const adj = LOCATIONS[adjId];
 
-  const g = el('g');
+      const x1 = loc.x, y1 = loc.y, x2 = adj.x, y2 = adj.y;
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      const off = len * 0.12;
+      const cx = mx + (-dy / len) * off;
+      const cy = my + (dx / len) * off;
+      const d = `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`;
 
-  // Wide sandy path base
-  g.appendChild(el('path', {
-    d, fill: 'none', stroke: '#d7ccc8', 'stroke-width': '3.5',
-    'stroke-linecap': 'round', opacity: '0.6'
-  }));
-  // Inner dirt path
-  g.appendChild(el('path', {
-    d, fill: 'none', stroke: '#bcaaa4', 'stroke-width': '2',
-    'stroke-linecap': 'round', opacity: '0.7'
-  }));
-  // Dotted center line (footsteps feel)
-  g.appendChild(el('path', {
-    d, fill: 'none', stroke: '#8d6e63', 'stroke-width': '0.4',
-    'stroke-linecap': 'round', 'stroke-dasharray': '1,2', opacity: '0.5'
-  }));
+      // Ground shadow under path
+      g.appendChild(svg('path', {
+        d, fill: 'none', stroke: '#3e2723', 'stroke-width': '6',
+        'stroke-linecap': 'round', opacity: '0.08'
+      }));
+      // Wide dirt base
+      g.appendChild(svg('path', {
+        d, fill: 'none', stroke: '#8d6e63', 'stroke-width': '5',
+        'stroke-linecap': 'round', opacity: '0.5'
+      }));
+      // Inner lighter dirt
+      g.appendChild(svg('path', {
+        d, fill: 'none', stroke: '#bcaaa4', 'stroke-width': '3.5',
+        'stroke-linecap': 'round', opacity: '0.6'
+      }));
+      // Sandy center
+      g.appendChild(svg('path', {
+        d, fill: 'none', stroke: '#d7ccc8', 'stroke-width': '2',
+        'stroke-linecap': 'round', opacity: '0.7'
+      }));
+      // Highlight streak
+      g.appendChild(svg('path', {
+        d, fill: 'none', stroke: '#efebe9', 'stroke-width': '0.8',
+        'stroke-linecap': 'round', opacity: '0.4'
+      }));
+    }
+  }
 
-  return g;
+  root.appendChild(g);
 }
 
+// ── Location clearings ──
+function buildClearings(root) {
+  const g = svg('g');
+  for (const loc of LOCATIONS) {
+    // Outer dirt clearing
+    g.appendChild(svg('circle', {
+      cx: String(loc.x), cy: String(loc.y), r: '6',
+      fill: '#a5d6a7', opacity: '0.4'
+    }));
+    g.appendChild(svg('circle', {
+      cx: String(loc.x), cy: String(loc.y), r: '4.5',
+      fill: '#c8e6c9', opacity: '0.5'
+    }));
+    g.appendChild(svg('circle', {
+      cx: String(loc.x), cy: String(loc.y), r: '3',
+      fill: '#e8f5e9', opacity: '0.6'
+    }));
+  }
+  root.appendChild(g);
+}
+
+// ── Walking character ──
 function buildCharacter(x, y, fromX, fromY) {
-  const character = document.createElement('div');
-  character.className = 'map-character';
-
-  // Determine facing direction
-  const goingRight = x > fromX;
-  const goingLeft = x < fromX;
-  character.textContent = '\u{1F9D2}'; // child emoji
+  const ch = document.createElement('div');
+  ch.className = 'map-character';
+  ch.textContent = '\u{1F9D2}';
 
   if (fromX !== null && fromY !== null && (fromX !== x || fromY !== y)) {
-    // Start at old position, animate to new
-    character.style.left = fromX + '%';
-    character.style.top = fromY + '%';
-    character.classList.add('map-character--walking');
-    if (goingLeft) character.style.transform = 'translate(-50%, -50%) scaleX(-1)';
-
+    ch.style.left = fromX + '%';
+    ch.style.top = fromY + '%';
+    ch.classList.add('map-character--walking');
+    if (x < fromX) ch.style.transform = 'translate(-50%, -50%) scaleX(-1)';
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        character.style.left = x + '%';
-        character.style.top = y + '%';
-        if (!goingLeft) character.style.transform = 'translate(-50%, -50%)';
+        ch.style.left = x + '%';
+        ch.style.top = y + '%';
+        if (x >= fromX) ch.style.transform = 'translate(-50%, -50%)';
       });
     });
   } else {
-    character.style.left = x + '%';
-    character.style.top = y + '%';
+    ch.style.left = x + '%';
+    ch.style.top = y + '%';
   }
-
-  return character;
+  return ch;
 }
 
+// ── Main render ──
 export function renderMap(container) {
   const state = getState();
   const current = LOCATIONS[state.pos];
-
   container.innerHTML = '';
 
   const mapDiv = document.createElement('div');
   mapDiv.className = 'game-map';
 
-  // SVG layer
-  const svg = el('svg', { viewBox: '0 0 100 100', preserveAspectRatio: 'none' });
-  svg.style.position = 'absolute';
-  svg.style.top = '0';
-  svg.style.left = '0';
-  svg.style.width = '100%';
-  svg.style.height = '100%';
+  const s = svg('svg', { viewBox: '0 0 100 100', preserveAspectRatio: 'xMidYMid slice' });
+  s.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%';
 
-  // Grass texture background patches (fixed positions for stable rendering)
-  const grassPatches = el('g');
-  const grassColors = ['#a5d6a7', '#81c784', '#c8e6c9', '#aed581'];
-  const grassData = [
-    [12,15,8], [35,10,7], [72,12,9], [88,20,6], [8,80,7],
-    [25,65,10], [60,75,8], [85,70,6], [45,30,9], [55,60,7],
-    [20,45,8], [70,45,6], [40,85,9], [90,55,7], [15,55,8],
-    [50,20,6], [75,85,7], [30,35,8], [65,55,9], [45,50,10],
-  ];
-  for (let i = 0; i < grassData.length; i++) {
-    const [gx, gy, gr] = grassData[i];
-    grassPatches.appendChild(el('ellipse', {
-      cx: String(gx), cy: String(gy), rx: String(gr), ry: String(gr * 0.7),
-      fill: grassColors[i % 4], opacity: '0.3'
-    }));
-  }
-  svg.appendChild(grassPatches);
+  // Layer order: terrain → paths → clearings → forest border (on top for depth)
+  buildTerrain(s);
+  buildPaths(s);
+  buildClearings(s);
+  buildForestBorder(s);
 
-  // Scenery (trees, bushes, water, rocks)
-  svg.appendChild(buildScenery());
-
-  // Paths between locations
-  const drawnEdges = new Set();
-  for (const loc of LOCATIONS) {
-    for (const adjId of loc.adj) {
-      const edgeKey = [Math.min(loc.id, adjId), Math.max(loc.id, adjId)].join('-');
-      if (drawnEdges.has(edgeKey)) continue;
-      drawnEdges.add(edgeKey);
-      const adj = LOCATIONS[adjId];
-      svg.appendChild(buildPath(loc.x, loc.y, adj.x, adj.y));
-    }
-  }
-
-  // Location clearings (flat spots under nodes)
-  for (const loc of LOCATIONS) {
-    svg.appendChild(el('circle', {
-      cx: String(loc.x), cy: String(loc.y), r: '5',
-      fill: '#e8f5e9', opacity: '0.6'
-    }));
-    // Inner lighter circle
-    svg.appendChild(el('circle', {
-      cx: String(loc.x), cy: String(loc.y), r: '3',
-      fill: '#f1f8e9', opacity: '0.5'
-    }));
-  }
-
-  mapDiv.appendChild(svg);
+  mapDiv.appendChild(s);
 
   // Character
-  const fromLoc = prevPos !== null ? LOCATIONS[prevPos] : current;
-  const charEl = buildCharacter(
+  const from = prevPos !== null ? LOCATIONS[prevPos] : current;
+  mapDiv.appendChild(buildCharacter(
     current.x, current.y,
-    prevPos !== null ? fromLoc.x : null,
-    prevPos !== null ? fromLoc.y : null
-  );
-  mapDiv.appendChild(charEl);
+    prevPos !== null ? from.x : null,
+    prevPos !== null ? from.y : null
+  ));
   prevPos = null;
 
   // Location nodes
@@ -297,26 +363,20 @@ export function renderMap(container) {
       btn.style.outlineOffset = '2px';
     }
 
-    // Icon
     const iconSpan = document.createElement('span');
     iconSpan.textContent = loc.icon;
     btn.appendChild(iconSpan);
 
-    // Label
     const label = document.createElement('span');
     label.className = 'map-node__label';
     label.textContent = loc.name;
     btn.appendChild(label);
 
-    // MP cost for reachable
     if (isReachable) {
       const mpText = document.createElement('span');
       mpText.className = 'map-node__mp';
       mpText.textContent = '1 MP';
       btn.appendChild(mpText);
-    }
-
-    if (isReachable) {
       btn.addEventListener('click', () => moveToLocation(loc.id));
     }
 
