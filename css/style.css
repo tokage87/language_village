@@ -149,10 +149,15 @@ body {
 .game-map {
   position: relative;
   padding-top: 90%;
-  background: linear-gradient(135deg, #e8f5e9, #a5d6a7);
+  background:
+    radial-gradient(ellipse at 50% 8%, #e3f2fd 0%, transparent 25%),
+    radial-gradient(ellipse at 6% 50%, #1b5e20 0%, transparent 15%),
+    radial-gradient(ellipse at 50% 92%, #ff8a6522 0%, transparent 20%),
+    linear-gradient(160deg, #c8e6c9 0%, #a5d6a7 30%, #81c784 60%, #a5d6a7 100%);
   border-radius: 20px;
   overflow: hidden;
   margin: 0 16px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.08);
 }
 
 .game-map svg {
@@ -163,6 +168,30 @@ body {
   height: 100%;
 }
 
+/* === Walking Character === */
+.map-character {
+  position: absolute;
+  font-size: 1.6rem;
+  z-index: 20;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.map-character--walking {
+  transition: left 0.5s ease-in-out, top 0.5s ease-in-out;
+}
+
+@keyframes bobWalk {
+  0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+  50%      { transform: translate(-50%, -50%) translateY(-3px); }
+}
+
+.map-character--walking {
+  animation: bobWalk 0.25s ease-in-out 2;
+}
+
+/* === Map Nodes === */
 .map-node {
   position: absolute;
   border-radius: 50%;
@@ -193,8 +222,8 @@ body {
 .map-node--reachable {
   width: 42px;
   height: 42px;
-  background: rgba(255, 255, 255, 0.85);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 0 0 2px rgba(255,255,255,0.5);
 }
 
 .map-node--locked {
@@ -218,11 +247,7 @@ body {
   color: #4338ca;
 }
 
-.map-node__pin {
-  position: absolute;
-  top: -14px;
-  font-size: 0.7rem;
-}
+/* pin removed — character emoji replaces it */
 
 /* === Location Card === */
 .loc-card {
@@ -883,5 +908,9 @@ body {
   .poke-mini-badge {
     font-size: 0.5rem;
     padding: 3px 0;
+  }
+
+  .map-character {
+    font-size: 1.3rem;
   }
 }
