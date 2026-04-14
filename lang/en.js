@@ -224,4 +224,5 @@ export default {
   maxLevel: "MAX!",
   milestoneTitle: "Osi\u0105gni\u0119cie! / Achievement!",
   milestoneBtn: "Super!",
+  correctAnswer: "Poprawna odpowied\u017a / Correct answer:",
 };

@@ -823,6 +823,27 @@ body {
   opacity: 0.7;
 }
 
+/* === Correct Answer Feedback === */
+.task-correct-answer {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #f0fdf4;
+  border: 2px solid #86efac;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: #166534;
+  line-height: 1.5;
+  animation: fadeUp 0.3s ease both;
+}
+
+.task-correct-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #15803d;
+  margin-bottom: 2px;
+}
+
 .task-check-btn {
   width: 100%;
   margin-top: 4px;

@@ -87,7 +87,13 @@ export function renderEasyTask(container, task, accent, onWin, onFail) {
             b.style.borderColor = '#86efac';
           }
         }
-        setTimeout(onFail, 800);
+        // Show correct sentence below
+        const correctSentence = sentence.replace('___', correct);
+        const correctDiv = document.createElement('div');
+        correctDiv.className = 'task-correct-answer';
+        correctDiv.innerHTML = `<span class="task-correct-label">${lang.correctAnswer}</span> <strong>${correctSentence}</strong>`;
+        container.appendChild(correctDiv);
+        setTimeout(onFail, 2500);
       }
     });
 
@@ -184,53 +190,59 @@ export function renderMedTask(container, task, accent, onWin, onFail) {
   checkBtn.style.background = accent;
   checkBtn.textContent = '\u2713 ' + lang.ui.check;
 
+  // Correct answer display element (reused on failures)
+  const correctDiv = document.createElement('div');
+  correctDiv.className = 'task-correct-answer';
+  correctDiv.style.display = 'none';
+  container.appendChild(correctDiv);
+
   checkBtn.addEventListener('click', () => {
     const builtWords = built.map(b => b.word);
-    const validAnswers = [task.data.w, ...(task.data.alt || [])];
     const extras = task.data.x || [];
+    const correctWords = task.data.w;
 
-    // Accept if builtWords is an ordered subsequence of any valid answer,
-    // uses no extra words, and has at least 3 words.
+    // Accept if: min 3 words, no distractor words, all words come from w
     const hasExtra = builtWords.some(w => extras.includes(w));
-    const isSubseq = (sub, full) => {
-      let j = 0;
-      for (let i = 0; i < full.length && j < sub.length; i++) {
-        if (sub[j] === full[i]) j++;
-      }
-      return j === sub.length;
-    };
-    const isCorrect = !hasExtra && builtWords.length >= 3 &&
-      validAnswers.some(correct => isSubseq(builtWords, correct));
+    const correctPool = [...correctWords];
+    let allFromW = true;
+    for (const bw of builtWords) {
+      const idx = correctPool.indexOf(bw);
+      if (idx === -1) { allFromW = false; break; }
+      correctPool.splice(idx, 1);
+    }
+    const isCorrect = !hasExtra && allFromW && builtWords.length >= 3;
 
     if (isCorrect) {
       buildZone.style.background = '#dcfce7';
       buildZone.style.borderColor = '#86efac';
       checkBtn.disabled = true;
+      correctDiv.style.display = 'none';
       setTimeout(onWin, 800);
     } else {
       buildZone.style.background = '#fee2e2';
       buildZone.style.borderColor = '#fca5a5';
 
+      // Show correct answer
+      correctDiv.style.display = '';
+      correctDiv.innerHTML = `<span class="task-correct-label">${lang.correctAnswer}</span> <strong>${correctWords.join(' ')}</strong>`;
+
       setTimeout(() => {
         // Reset
         buildZone.style.background = '';
         buildZone.style.borderColor = '#cbd5e1';
-        // Return all words to pool
         for (const b of built) {
           b.poolBtn.style.display = '';
         }
         built.length = 0;
-        // Remove build-word buttons
         for (const tag of [...buildZone.querySelectorAll('.task-build-word')]) {
           tag.remove();
         }
         refreshPlaceholder();
-        // Re-shuffle pool
         const poolBtns = [...pool.children];
         const shuffled = shuffle(poolBtns);
         pool.innerHTML = '';
         for (const b of shuffled) pool.appendChild(b);
-      }, 1000);
+      }, 2500);
     }
   });
 
