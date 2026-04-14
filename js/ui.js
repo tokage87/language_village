@@ -2,8 +2,9 @@ import { getState, setState, clearState } from './state.js';
 import { LOCATIONS, ELEMENTS, renderMap } from './map.js';
 import { getTask, renderEasyTask, renderMedTask, renderHardTask, lang } from './tasks.js';
 import { renderVocabRest } from './vocab.js';
+import { POKEMONS, renderPokemonPanel } from './pokemon.js';
 
-let currentScreen = 'map'; // 'map' | 'task' | 'rest'
+let currentScreen = 'map'; // 'map' | 'task' | 'rest' | 'pokemon'
 let taskContext = null;     // { task, difficulty, loc }
 
 function getDifficulty(loc) {
@@ -30,19 +31,26 @@ function renderHeader() {
   const header = document.createElement('div');
   header.className = 'header fade-up';
 
+  const isPokemonScreen = currentScreen === 'pokemon';
+
   header.innerHTML = `
     <h1>\u{1F5FA}\uFE0F ${lang.ui.title}
       <span>${lang.ui.tasksDone}: ${state.done}</span>
     </h1>
     <div class="header-right">
       <div class="mp-badge">\u{1F9B6} ${state.mp}</div>
-      <button class="btn-pokemon">\u{1F43E} ${lang.ui.pokemon}</button>
+      <button class="btn-pokemon">${isPokemonScreen ? '\u2715 ' + lang.ui.close : '\u{1F43E} ' + lang.ui.pokemon}</button>
     </div>
   `;
 
   const pokeBtn = header.querySelector('.btn-pokemon');
   pokeBtn.addEventListener('click', () => {
-    alert('Pokemon screen coming soon!');
+    if (currentScreen === 'pokemon') {
+      currentScreen = 'map';
+    } else {
+      currentScreen = 'pokemon';
+    }
+    render();
   });
 
   return header;
@@ -122,17 +130,14 @@ function renderPokeStatus() {
   const row = document.createElement('div');
   row.className = 'poke-status fade-up';
 
-  const pokemons = [
-    { name: 'Pikachu',    icon: '\u26A1',    key: 'pikachu' },
-    { name: 'Bulbasaur',  icon: '\u{1F33F}', key: 'bulbasaur' },
-    { name: 'Charmander', icon: '\u{1F525}', key: 'charmander' },
-    { name: 'Eevee',      icon: '\u2728',    key: 'eevee' },
-  ];
-
-  for (const p of pokemons) {
+  for (const poke of POKEMONS) {
+    const el = ELEMENTS[poke.el];
+    const stage = state.evo[poke.id] || 0;
     const badge = document.createElement('div');
-    badge.className = 'poke-badge';
-    badge.textContent = `${p.icon} ${p.name} ${state.evo[p.key]}`;
+    badge.className = 'poke-mini-badge';
+    badge.style.background = el.color + '1F';
+    badge.style.borderColor = el.color + '55';
+    badge.textContent = `${poke.icons[stage]} ${poke.stages[stage]}`;
     row.appendChild(badge);
   }
 
@@ -269,6 +274,16 @@ function renderRestScreen() {
   return wrap;
 }
 
+function renderPokemonScreen() {
+  const wrap = document.createElement('div');
+  wrap.className = 'fade-up';
+  wrap.style.padding = '0 16px';
+
+  renderPokemonPanel(wrap);
+
+  return wrap;
+}
+
 function renderNoMpBanner() {
   const banner = document.createElement('div');
   banner.className = 'no-mp-banner fade-up';
@@ -286,6 +301,8 @@ export function render() {
     app.appendChild(renderTaskScreen());
   } else if (currentScreen === 'rest') {
     app.appendChild(renderRestScreen());
+  } else if (currentScreen === 'pokemon') {
+    app.appendChild(renderPokemonScreen());
   } else {
     const state = getState();
     if (state.mp === 0) {

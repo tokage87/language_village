@@ -126,4 +126,8 @@ export default {
   startWith: "Start with:",
   words: "Words:",
   done: "Done!",
+  evolveTitle: "Ewolucja!",
+  evolveBtn: "Super! \u{1F389}",
+  collectItems: "Zbieraj przedmioty \u017cywio\u0142\u00f3w na mapie!",
+  maxLevel: "MAX!",
 };
