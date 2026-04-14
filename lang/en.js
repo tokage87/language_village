@@ -104,7 +104,7 @@ export default {
     { q: "Describe a person", w: ["She","has","long","hair","and","blue","eyes"], x: ["is"], alt: [["She","has","blue","eyes","and","long","hair"]] },
     // --- hobby ---
     { q: "Talk about your hobby", w: ["I","love","drawing","pictures","of","animals"], x: ["is"] },
-    { q: "Describe a walk", w: ["I","like","walking","in","the","park","with","my","dog"], x: ["are"] },
+    { q: "Describe a walk", w: ["I","like","walking","in","the","park","with","my","dog"], x: ["are"], alt: [["I","like","walking","with","my","dog","in","the","park"]] },
     // --- weekend ---
     { q: "Talk about the weekend", w: ["On","Sunday","we","went","to","the","park"], x: ["is"] },
     { q: "Talk about grandparents", w: ["I","visit","my","grandparents","every","weekend"], x: ["is"] },
