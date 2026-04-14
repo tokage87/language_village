@@ -4,11 +4,94 @@ import { render } from './ui.js';
 import lang from '../lang/en.js';
 
 export const POKEMONS = [
-  { id: 'pikachu',    el: 'electric', stages: ['Pichu','Pikachu','Raichu'],          icons: ['\u26A1','\u26A1\u26A1','\u26A1\u26A1\u26A1'],             needs: [4, 7] },
-  { id: 'bulbasaur',  el: 'nature',   stages: ['Bulbasaur','Ivysaur','Venusaur'],    icons: ['\u{1F331}','\u{1F33F}','\u{1F33A}'],                      needs: [4, 7] },
-  { id: 'charmander', el: 'fire',     stages: ['Charmander','Charmeleon','Charizard'],icons: ['\u{1F525}','\u{1F525}\u{1F525}','\u{1F409}'],             needs: [4, 7] },
-  { id: 'eevee',      el: 'magic',    stages: ['Eevee','Espeon','Sylveon'],          icons: ['\u2728','\u{1F52E}','\u{1F4AB}'],                         needs: [4, 7] },
+  { id: 'pikachu',    el: 'electric', stages: ['Pichu','Pikachu','Raichu'],          icons: ['\u26A1','\u26A1\u26A1','\u26A1\u26A1\u26A1'],   needs: [6, 10],
+    milestones: [
+      { at: 3, stage: 0, key: 'pikachu-0', name: 'Spark Collector', icon: '\u26A1\u{1F31F}' },
+      { at: 5, stage: 1, key: 'pikachu-1', name: 'Thunder Lord',    icon: '\u26A1\u26A1\u{1F31F}' },
+    ] },
+  { id: 'bulbasaur',  el: 'nature',   stages: ['Bulbasaur','Ivysaur','Venusaur'],    icons: ['\u{1F331}','\u{1F33F}','\u{1F33A}'],             needs: [6, 10],
+    milestones: [
+      { at: 3, stage: 0, key: 'bulbasaur-0', name: 'Seed Gatherer',    icon: '\u{1F331}\u{1F31F}' },
+      { at: 5, stage: 1, key: 'bulbasaur-1', name: 'Forest Guardian',  icon: '\u{1F33F}\u{1F31F}' },
+    ] },
+  { id: 'charmander', el: 'fire',     stages: ['Charmander','Charmeleon','Charizard'],icons: ['\u{1F525}','\u{1F525}\u{1F525}','\u{1F409}'],   needs: [6, 10],
+    milestones: [
+      { at: 3, stage: 0, key: 'charmander-0', name: 'Flame Starter', icon: '\u{1F525}\u{1F31F}' },
+      { at: 5, stage: 1, key: 'charmander-1', name: 'Fire Master',   icon: '\u{1F525}\u{1F525}\u{1F31F}' },
+    ] },
+  { id: 'eevee',      el: 'magic',    stages: ['Eevee','Espeon','Sylveon'],          icons: ['\u2728','\u{1F52E}','\u{1F4AB}'],                needs: [6, 10],
+    milestones: [
+      { at: 3, stage: 0, key: 'eevee-0', name: 'Star Seeker',   icon: '\u2728\u{1F31F}' },
+      { at: 5, stage: 1, key: 'eevee-1', name: 'Cosmic Wizard', icon: '\u{1F52E}\u{1F31F}' },
+    ] },
 ];
+
+// Check milestones after item gain — returns new milestone or null
+export function checkMilestones() {
+  const state = getState();
+  for (const poke of POKEMONS) {
+    const stage = state.evo[poke.id] || 0;
+    const have = state.items[poke.el] || 0;
+    for (const ms of poke.milestones) {
+      if (ms.stage === stage && have >= ms.at && !state.milestones.includes(ms.key)) {
+        const newMs = [...state.milestones, ms.key];
+        setState({ milestones: newMs });
+        return { poke, milestone: ms };
+      }
+    }
+  }
+  return null;
+}
+
+export function showMilestonePopup(poke, milestone) {
+  const el = ELEMENTS[poke.el];
+
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay';
+
+  const card = document.createElement('div');
+  card.className = 'popup-card';
+
+  const title = document.createElement('div');
+  title.className = 'popup-title';
+  title.textContent = lang.milestoneTitle;
+  card.appendChild(title);
+
+  const badge = document.createElement('div');
+  badge.className = 'milestone-popup-badge';
+  badge.style.background = el.color + '18';
+  badge.style.borderColor = el.color;
+  badge.textContent = milestone.icon;
+  card.appendChild(badge);
+
+  const name = document.createElement('div');
+  name.className = 'popup-name';
+  name.style.color = el.color;
+  name.textContent = milestone.name;
+  card.appendChild(name);
+
+  const desc = document.createElement('div');
+  desc.className = 'milestone-popup-desc';
+  const st = getState();
+  desc.textContent = `${poke.stages[milestone.stage]} \u2192 ${el.icon} ${st.items[poke.el]}/${poke.needs[milestone.stage]}`;
+  card.appendChild(desc);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'btn-primary popup-close-btn';
+  closeBtn.style.background = el.color;
+  closeBtn.textContent = lang.milestoneBtn;
+  closeBtn.addEventListener('click', () => {
+    overlay.remove();
+  });
+  card.appendChild(closeBtn);
+
+  overlay.appendChild(card);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.remove();
+  });
+
+  document.body.appendChild(overlay);
+}
 
 export function renderPokemonPanel(container) {
   container.innerHTML = '';
@@ -76,6 +159,18 @@ export function renderPokemonPanel(container) {
 
       card.appendChild(barWrap);
 
+      // Milestone badges for this stage
+      const stageMilestones = poke.milestones.filter(m => m.stage === stage);
+      for (const ms of stageMilestones) {
+        const achieved = state.milestones.includes(ms.key);
+        const msBadge = document.createElement('div');
+        msBadge.className = 'poke-milestone' + (achieved ? ' poke-milestone--done' : '');
+        msBadge.style.borderColor = achieved ? el.color : '#e2e8f0';
+        msBadge.style.color = achieved ? el.color : '#ccc';
+        msBadge.textContent = achieved ? `${ms.icon} ${ms.name}` : `\u{1F512} ${ms.name} (${ms.at}/${need})`;
+        card.appendChild(msBadge);
+      }
+
       if (have >= need) {
         const evoBtn = document.createElement('button');
         evoBtn.className = 'poke-evolve-btn pulse';
@@ -89,12 +184,23 @@ export function renderPokemonPanel(container) {
       maxLabel.className = 'poke-card__max';
       maxLabel.textContent = `${lang.maxLevel} \u{1F3C6}`;
       card.appendChild(maxLabel);
+
+      // Show all achieved milestones
+      for (const ms of poke.milestones) {
+        if (state.milestones.includes(ms.key)) {
+          const msBadge = document.createElement('div');
+          msBadge.className = 'poke-milestone poke-milestone--done';
+          msBadge.style.borderColor = el.color;
+          msBadge.style.color = el.color;
+          msBadge.textContent = `${ms.icon} ${ms.name}`;
+          card.appendChild(msBadge);
+        }
+      }
     }
 
     grid.appendChild(card);
   }
 
-  // Hint at bottom
   const hint = document.createElement('p');
   hint.className = 'poke-collect-hint';
   hint.textContent = lang.collectItems;
@@ -113,7 +219,6 @@ function evolve(pokemonId) {
   const have = state.items[poke.el] || 0;
   if (have < need) return;
 
-  // Deduct items and increase evo
   const newItems = { ...state.items };
   newItems[poke.el] = have - need;
   const newEvo = { ...state.evo };
@@ -123,7 +228,6 @@ function evolve(pokemonId) {
   const newStage = stage + 1;
   const el = ELEMENTS[poke.el];
 
-  // Show evolution popup
   const overlay = document.createElement('div');
   overlay.className = 'popup-overlay';
 

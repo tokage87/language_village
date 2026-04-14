@@ -557,6 +557,36 @@ body {
   margin-top: 4px;
 }
 
+.poke-milestone {
+  margin-top: 4px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1.5px solid #e2e8f0;
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-align: center;
+  width: 100%;
+}
+
+.poke-milestone--done {
+  background: white;
+}
+
+.milestone-popup-badge {
+  display: inline-block;
+  font-size: 2rem;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 3px solid;
+  margin-bottom: 12px;
+}
+
+.milestone-popup-desc {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 16px;
+}
+
 .poke-collect-hint {
   text-align: center;
   font-size: 0.75rem;

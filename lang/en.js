@@ -21,8 +21,7 @@ export default {
     hard: "\u2B50\u2B50\u2B50 Hard",
   },
 
-  // ─── EASY: uzupełnij lukę ───
-  // Format: [zdanie z ___, poprawna, zła1, zła2, zła3]
+  // ─── EASY: uzupełnij lukę (40 zdań) ───
   easyTasks: [
     ["My name ___ Tom.", "is", "are", "has", "do"],
     ["She ___ brown hair.", "has", "is", "are", "do"],
@@ -49,44 +48,125 @@ export default {
     ["He ___ football every Saturday.", "plays", "play", "playing", "played"],
     ["The flowers ___ beautiful.", "are", "is", "am", "has"],
     ["I ___ to the shop with my mum.", "go", "goes", "going", "went"],
+    // ── nowe ──
+    ["I ___ board games.", "like", "likes", "liking", "liked"],
+    ["We ___ board games after dinner.", "play", "plays", "playing", "played"],
+    ["My favourite food ___ curry.", "is", "are", "am", "has"],
+    ["I ___ to try new food.", "want", "wants", "wanting", "wanted"],
+    ["She ___ to the lake every summer.", "goes", "go", "going", "went"],
+    ["We ___ Japan last year.", "visited", "visit", "visits", "visiting"],
+    ["I ___ new places on holiday.", "love", "loves", "loving", "loved"],
+    ["My dad ___ very well.", "cooks", "cook", "cooking", "cooked"],
+    ["They ___ to the mountains yesterday.", "travelled", "travel", "travels", "travelling"],
+    ["I ___ ice cream in summer.", "eat", "eats", "eating", "ate"],
+    ["She ___ her homework before dinner.", "does", "do", "doing", "did"],
+    ["We ___ a great time at the party.", "had", "have", "has", "having"],
+    ["The teacher ___ us new words.", "teaches", "teach", "teaching", "taught"],
+    ["I ___ my grandparents every weekend.", "visit", "visits", "visiting", "visited"],
+    ["He ___ a sandwich for lunch.", "eats", "eat", "eating", "ate"],
   ],
 
-  // ─── MEDIUM: ułóż zdanie ───
-  // Format: { q: podpowiedź, w: [poprawna kolejność], x: [ekstra słowa] }
+  // ─── MEDIUM: ułóż zdanie (30 zdań) ───
   medTasks: [
+    // --- opis przyjaciela ---
     { q: "Describe your friend", w: ["My","friend","is","very","kind"], x: ["the","has"] },
+    { q: "Say your friend's age", w: ["My","best","friend","is","ten","years","old"], x: ["has"] },
+    { q: "Say what you do with your friend", w: ["I","like","playing","games","with","my","friend"], x: ["is"] },
+    // --- hobby / po szkole ---
     { q: "Say what you like", w: ["I","like","playing","with","my","dog"], x: ["is"] },
+    { q: "Talk about board games", w: ["I","like","playing","board","games","with","my","family"], x: ["is"] },
+    { q: "Describe after school", w: ["After","school","I","play","games","with","my","sister"], x: ["is"] },
+    // --- wakacje / podroze ---
     { q: "Say where you went", w: ["Last","summer","I","went","to","the","beach"], x: ["has"] },
-    { q: "Describe your morning", w: ["I","wake","up","at","seven","o'clock"], x: ["has","the"] },
-    { q: "Talk about school", w: ["My","favourite","subject","is","English"], x: ["are"] },
-    { q: "Describe the weather", w: ["It","was","sunny","and","very","hot"], x: ["is"], alt: [["It","was","very","hot","and","sunny"]] },
+    { q: "Talk about holiday plans", w: ["On","holiday","I","like","going","to","the","lake"], x: ["are"] },
+    { q: "Talk about a trip", w: ["Last","holiday","I","visited","Japan","with","my","family"], x: ["is"] },
+    { q: "Talk about sightseeing", w: ["I","like","seeing","new","places","on","holiday"], x: ["are"] },
+    // --- jedzenie ---
+    { q: "Talk about favourite food", w: ["My","favourite","food","is","curry","with","rice"], x: ["are"], alt: [["My","favourite","food","is","rice","with","curry"]] },
+    { q: "Talk about trying new food", w: ["I","like","trying","new","food","on","holiday"], x: ["is"] },
     { q: "Talk about food", w: ["I","ate","pizza","for","lunch","today"], x: ["is"] },
+    // --- poranek / rutyna ---
+    { q: "Describe your morning", w: ["I","wake","up","at","seven","o'clock"], x: ["has","the"] },
+    { q: "Talk about your morning", w: ["Every","morning","I","eat","breakfast","and","go","to","school"], x: ["is"] },
+    // --- szkola ---
+    { q: "Talk about school", w: ["My","favourite","subject","is","English"], x: ["are"] },
+    { q: "Describe your teacher", w: ["My","teacher","is","very","nice","and","helpful"], x: ["am"], alt: [["My","teacher","is","helpful","and","very","nice"]] },
+    // --- pogoda ---
+    { q: "Describe the weather", w: ["It","was","sunny","and","very","hot"], x: ["is"], alt: [["It","was","very","hot","and","sunny"]] },
+    // --- dom / pokoj ---
     { q: "Describe your room", w: ["My","room","is","small","but","cozy"], x: ["are"], alt: [["My","room","is","cozy","but","small"]] },
+    // --- co sie wydarzylo ---
     { q: "Say what happened", w: ["We","played","football","and","had","fun"], x: ["is"], alt: [["We","had","fun","and","played","football"]] },
+    { q: "Describe a party", w: ["We","had","a","great","time","at","the","party"], x: ["is"] },
+    // --- zwierzeta ---
     { q: "Talk about your pet", w: ["My","dog","is","brown","and","very","friendly"], x: ["are"], alt: [["My","dog","is","very","friendly","and","brown"]] },
+    // --- osoby ---
     { q: "Describe a person", w: ["She","has","long","hair","and","blue","eyes"], x: ["is"], alt: [["She","has","blue","eyes","and","long","hair"]] },
+    // --- hobby ---
     { q: "Talk about your hobby", w: ["I","love","drawing","pictures","of","animals"], x: ["is"] },
+    { q: "Describe a walk", w: ["I","like","walking","in","the","park","with","my","dog"], x: ["are"] },
+    // --- weekend ---
     { q: "Talk about the weekend", w: ["On","Sunday","we","went","to","the","park"], x: ["is"] },
+    { q: "Talk about grandparents", w: ["I","visit","my","grandparents","every","weekend"], x: ["is"] },
+    // --- uczucia ---
     { q: "Say how you feel", w: ["I","am","very","happy","and","excited"], x: ["is","has"], alt: [["I","am","excited","and","very","happy"]] },
+    // --- rodzina ---
     { q: "Describe your family", w: ["My","family","is","big","and","very","kind"], x: ["are"], alt: [["My","family","is","very","kind","and","big"]] },
+    // --- gotowanie ---
+    { q: "Talk about cooking", w: ["My","dad","cooks","delicious","food","every","day"], x: ["is"] },
   ],
 
-  // ─── HARD: odpowiedz na pytanie ───
-  // Format: { q: pytanie, st: [startery zdań], wb: [bank słówek] }
+  // ─── HARD: odpowiedz na pytanie (15 pytań) ───
   hardTasks: [
-    { q: "What does your best friend look like?", st: ["My best friend has","He/She is","My friend looks"], wb: ["tall","short","hair","eyes","funny","kind","brown","blue"] },
-    { q: "What do you do after school?", st: ["After school I","First I","Then I usually"], wb: ["homework","play","eat","outside","friends","watch","read","walk"] },
-    { q: "What did you do on your last holiday?", st: ["On my holiday I","We went to","I visited"], wb: ["beach","swam","played","sunny","family","ate","fun","travelled"] },
-    { q: "Why is English your favourite subject?", st: ["I like English because","English is fun because","I enjoy English"], wb: ["interesting","speak","learn","songs","games","teacher","words","stories"] },
-    { q: "Describe your favourite place.", st: ["My favourite place is","I love going to","The best place is"], wb: ["park","beach","garden","beautiful","quiet","play","relax","happy"] },
-    { q: "What do you usually eat for breakfast?", st: ["For breakfast I eat","I usually have","In the morning I"], wb: ["cereal","bread","milk","juice","eggs","cheese","fruit","toast"] },
-    { q: "Describe what you see from your window.", st: ["From my window I can see","Outside there is","I look out and see"], wb: ["trees","cars","garden","sky","buildings","people","birds","flowers"] },
-    { q: "Talk about your favourite animal.", st: ["My favourite animal is","I love them because","They are"], wb: ["cute","fast","strong","big","friendly","beautiful","smart","funny"] },
-    { q: "What is your daily routine?", st: ["Every day I","In the morning I","First I always"], wb: ["wake up","breakfast","school","lunch","homework","play","dinner","bed"] },
-    { q: "Describe your best memory.", st: ["My best memory is","I remember when","One time I"], wb: ["birthday","holiday","surprise","happy","family","laughed","special","amazing"] },
+    { q: "Describe your best friend in detail: what do they look like, how old are they, what do you like doing together?",
+      st: ["My best friend is","We like to","He/She has","We have been friends"],
+      wb: ["tall","short","hair","eyes","funny","kind","years","old","play","games","school","together","since","always"] },
+    { q: "What do you do after school? Describe your afternoon step by step.",
+      st: ["After school I","First I","Then I usually","In the evening I"],
+      wb: ["homework","play","eat","outside","friends","watch","read","walk","games","board","family","dinner"] },
+    { q: "Describe your last holiday: where did you go, what did you do, what was the best part?",
+      st: ["On my last holiday","We went to","The best part was","I really enjoyed"],
+      wb: ["beach","mountains","lake","swam","played","sunny","family","ate","fun","travelled","visited","amazing","beautiful"] },
+    { q: "Why do you like learning English? What is fun about it?",
+      st: ["I like English because","English is fun because","I enjoy learning English"],
+      wb: ["interesting","speak","learn","songs","games","teacher","words","stories","films","friends","travel","understand"] },
+    { q: "Describe your favourite place. What does it look like? Why do you like it? What do you do there?",
+      st: ["My favourite place is","I love going there because","When I am there I"],
+      wb: ["park","beach","garden","beautiful","quiet","play","relax","happy","trees","water","peaceful","friends"] },
+    { q: "What do you usually eat? Describe your favourite meal and why you like it.",
+      st: ["My favourite food is","I usually eat","I like it because"],
+      wb: ["curry","pizza","rice","chicken","delicious","tasty","warm","spicy","sweet","lunch","dinner","mum","cooks"] },
+    { q: "Look out of your window and describe what you see. What is happening outside?",
+      st: ["From my window I can see","Outside there is","Right now I see"],
+      wb: ["trees","cars","garden","sky","buildings","people","birds","flowers","clouds","sun","rain","children","playing"] },
+    { q: "Talk about your favourite animal. What does it look like? Where does it live? Why do you like it?",
+      st: ["My favourite animal is","I love them because","They live in"],
+      wb: ["cute","fast","strong","big","friendly","beautiful","smart","funny","forest","ocean","farm","wild"] },
+    { q: "Describe your typical day from morning to evening.",
+      st: ["Every day I","In the morning I","After school I","In the evening I"],
+      wb: ["wake up","breakfast","school","lunch","homework","play","dinner","bed","brush","walk","read","watch"] },
+    { q: "Describe your best memory. What happened? Who was there? How did you feel?",
+      st: ["My best memory is","I remember when","Everyone was","I felt so"],
+      wb: ["birthday","holiday","surprise","happy","family","laughed","special","amazing","friends","cake","presents","excited"] },
+    // ── nowe ──
+    { q: "Describe your family: who are they, what do they look like, what do you like doing together?",
+      st: ["My family is","My mum/dad is","We like to","On weekends we"],
+      wb: ["big","small","kind","funny","tall","cook","play","walk","watch","together","sister","brother","parents","love"] },
+    { q: "What do you like to do on holiday? Describe your perfect holiday.",
+      st: ["On my perfect holiday","I would like to","Every day I would","The best thing is"],
+      wb: ["beach","lake","mountains","swim","explore","eat","ice cream","new","places","relax","sunny","friends","family","travel"] },
+    { q: "Talk about your favourite game. How do you play it? Who do you play with?",
+      st: ["My favourite game is","I play it with","The rules are","I like it because"],
+      wb: ["board","card","video","family","friends","fun","exciting","win","lose","turns","team","together","easy","difficult"] },
+    { q: "Describe your school: what does it look like, what subjects do you have, what do you like about it?",
+      st: ["My school is","My favourite subject is","I like my school because","The teachers are"],
+      wb: ["big","small","friendly","English","maths","art","sport","nice","learn","friends","playground","classroom","fun"] },
+    { q: "What would you like to be when you grow up? Why?",
+      st: ["When I grow up","I would like to be","I want this job because","I think it is"],
+      wb: ["doctor","teacher","artist","scientist","cook","interesting","help","people","animals","create","travel","learn","important","exciting"] },
   ],
 
-  // ─── VOCAB: pary EN/PL do gry odpoczynkowej ───
+  // ─── VOCAB: pary EN/PL (40 par) ───
   vocab: [
     { en: "kind", pl: "mi\u0142y" },
     { en: "brave", pl: "odwa\u017cny" },
@@ -118,6 +198,17 @@ export default {
     { en: "angry", pl: "z\u0142y" },
     { en: "scared", pl: "przestraszony" },
     { en: "proud", pl: "dumny" },
+    // ── nowe ──
+    { en: "board game", pl: "gra planszowa" },
+    { en: "lake", pl: "jezioro" },
+    { en: "curry", pl: "curry" },
+    { en: "to try", pl: "pr\u00f3bowa\u0107" },
+    { en: "to travel", pl: "podr\u00f3\u017cowa\u0107" },
+    { en: "to visit", pl: "odwiedza\u0107" },
+    { en: "to cook", pl: "gotowa\u0107" },
+    { en: "grandparents", pl: "dziadkowie" },
+    { en: "science", pl: "nauka" },
+    { en: "difficult", pl: "trudny" },
   ],
 
   vocabTitle: "\u{1F9D8} Odpoczynek \u2014 dopasuj s\u0142\u00f3wka! / Rest \u2014 match the words!",
@@ -131,4 +222,6 @@ export default {
   evolveBtn: "Super! \u{1F389}",
   collectItems: "Zbieraj przedmioty \u017cywio\u0142\u00f3w na mapie!",
   maxLevel: "MAX!",
+  milestoneTitle: "Osi\u0105gni\u0119cie! / Achievement!",
+  milestoneBtn: "Super!",
 };

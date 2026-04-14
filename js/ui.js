@@ -2,7 +2,7 @@ import { getState, setState, clearState } from './state.js';
 import { LOCATIONS, ELEMENTS, renderMap } from './map.js';
 import { getTask, renderEasyTask, renderMedTask, renderHardTask, lang } from './tasks.js';
 import { renderVocabRest } from './vocab.js';
-import { POKEMONS, renderPokemonPanel } from './pokemon.js';
+import { POKEMONS, renderPokemonPanel, checkMilestones, showMilestonePopup } from './pokemon.js';
 
 let currentScreen = 'map'; // 'map' | 'task' | 'rest' | 'pokemon' | 'phrases'
 let taskContext = null;     // { task, difficulty, loc }
@@ -240,6 +240,9 @@ function renderTaskScreen() {
     lastResult = 'win';
     currentScreen = 'map';
     render();
+    // Check milestones after render so popup appears on top
+    const ms = checkMilestones();
+    if (ms) showMilestonePopup(ms.poke, ms.milestone);
   };
 
   const onFail = () => {

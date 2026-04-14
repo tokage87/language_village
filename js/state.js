@@ -6,6 +6,7 @@ const INITIAL_STATE = {
   items: { fire: 0, nature: 0, electric: 0, magic: 0 },
   evo: { pikachu: 0, bulbasaur: 0, charmander: 0, eevee: 0 },
   done: 0,
+  milestones: [],
 };
 
 let state = null;
@@ -14,7 +15,7 @@ export function loadState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      state = JSON.parse(saved);
+      state = { ...structuredClone(INITIAL_STATE), ...JSON.parse(saved) };
     } else {
       state = structuredClone(INITIAL_STATE);
     }
