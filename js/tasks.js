@@ -187,10 +187,20 @@ export function renderMedTask(container, task, accent, onWin, onFail) {
   checkBtn.addEventListener('click', () => {
     const builtWords = built.map(b => b.word);
     const validAnswers = [task.data.w, ...(task.data.alt || [])];
+    const extras = task.data.x || [];
 
-    const isCorrect = validAnswers.some(correct =>
-      builtWords.length === correct.length && builtWords.every((w, i) => w === correct[i])
-    );
+    // Accept if builtWords is an ordered subsequence of any valid answer,
+    // uses no extra words, and has at least 3 words.
+    const hasExtra = builtWords.some(w => extras.includes(w));
+    const isSubseq = (sub, full) => {
+      let j = 0;
+      for (let i = 0; i < full.length && j < sub.length; i++) {
+        if (sub[j] === full[i]) j++;
+      }
+      return j === sub.length;
+    };
+    const isCorrect = !hasExtra && builtWords.length >= 3 &&
+      validAnswers.some(correct => isSubseq(builtWords, correct));
 
     if (isCorrect) {
       buildZone.style.background = '#dcfce7';
