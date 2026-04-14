@@ -311,8 +311,10 @@ export function renderHardTask(container, task, accent, onWin) {
     doneBtn.disabled = n < 3;
     if (n >= 3) {
       doneBtn.style.opacity = '1';
+      wordCount.classList.add('task-word-count--ok');
     } else {
       doneBtn.style.opacity = '0.5';
+      wordCount.classList.remove('task-word-count--ok');
     }
   }
 

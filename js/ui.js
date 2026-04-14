@@ -6,6 +6,7 @@ import { POKEMONS, renderPokemonPanel } from './pokemon.js';
 
 let currentScreen = 'map'; // 'map' | 'task' | 'rest' | 'pokemon'
 let taskContext = null;     // { task, difficulty, loc }
+let lastResult = null;      // 'win' | 'fail' | null
 
 function getDifficulty(loc) {
   const state = getState();
@@ -24,6 +25,12 @@ function diffLabel(difficulty) {
   if (difficulty === 'easy') return lang.ui.easy;
   if (difficulty === 'med') return lang.ui.medium;
   return lang.ui.hard;
+}
+
+function diffStars(difficulty) {
+  if (difficulty === 'easy') return '\u2B50';
+  if (difficulty === 'med') return '\u2B50\u2B50';
+  return '\u2B50\u2B50\u2B50';
 }
 
 function renderHeader() {
@@ -79,6 +86,14 @@ function renderLocationCard() {
   const card = document.createElement('div');
   card.className = 'loc-card fade-up';
 
+  // Apply feedback animation
+  if (lastResult === 'win') {
+    card.classList.add('loc-card--success');
+  } else if (lastResult === 'fail') {
+    card.classList.add('loc-card--fail');
+  }
+  lastResult = null;
+
   const el = loc.el ? ELEMENTS[loc.el] : null;
   const elInfo = el
     ? `${el.icon} ${loc.el.charAt(0).toUpperCase() + loc.el.slice(1)} zone \u2014 earn ${el.item}`
@@ -98,11 +113,11 @@ function renderLocationCard() {
   const actions = card.querySelector('.loc-card__actions');
 
   if (el) {
+    const difficulty = getDifficulty(loc);
     const taskBtn = document.createElement('button');
     taskBtn.className = 'btn-primary';
     taskBtn.style.background = el.color;
-    const difficulty = getDifficulty(loc);
-    taskBtn.textContent = `\u2694\uFE0F ${lang.ui.doTask} \u2192 ${el.icon}`;
+    taskBtn.innerHTML = `\u2694\uFE0F ${lang.ui.doTask} \u2192 ${el.icon} <span class="btn-diff-stars">${diffStars(difficulty)}</span>`;
 
     taskBtn.addEventListener('click', () => {
       const task = getTask(difficulty);
@@ -116,6 +131,12 @@ function renderLocationCard() {
   const restBtn = document.createElement('button');
   restBtn.className = 'btn-secondary';
   restBtn.textContent = '\u{1F9D8} ' + lang.ui.restBtn;
+
+  // Pulse rest button when mp=0 and no element task available
+  if (state.mp === 0 && !el) {
+    restBtn.classList.add('rest-pulse');
+  }
+
   restBtn.addEventListener('click', () => {
     currentScreen = 'rest';
     render();
@@ -148,6 +169,7 @@ function renderMapScreen() {
   const frag = document.createDocumentFragment();
 
   const mapContainer = document.createElement('div');
+  mapContainer.className = 'fade-up';
   renderMap(mapContainer);
   frag.appendChild(mapContainer);
 
@@ -208,11 +230,13 @@ function renderTaskScreen() {
     const newItems = { ...state.items };
     newItems[loc.el] = (newItems[loc.el] || 0) + 1;
     setState({ items: newItems, done: state.done + 1 });
+    lastResult = 'win';
     currentScreen = 'map';
     render();
   };
 
   const onFail = () => {
+    lastResult = 'fail';
     currentScreen = 'map';
     render();
   };

@@ -1,3 +1,4 @@
+// English Quest — Language file. Copy this file and translate to add a new language.
 export default {
   // ─── Teksty UI ───
   ui: {
