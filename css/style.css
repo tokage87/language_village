@@ -466,3 +466,177 @@ body {
   margin-top: 8px;
   text-align: center;
 }
+
+/* === Hard Task === */
+.task-hard-question {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.task-helper-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  margin-top: 10px;
+}
+
+.task-starters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.task-starter-btn {
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1.5px solid #e2e8f0;
+  background: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  color: #333;
+}
+
+.task-starter-btn:hover {
+  background: #f8fafc;
+}
+
+.task-word-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.task-wb-btn {
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1.5px solid;
+  background: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.task-wb-btn:hover {
+  opacity: 0.7;
+}
+
+.task-textarea {
+  width: 100%;
+  min-height: 50px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 0.9rem;
+  font-family: 'Nunito', sans-serif;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.task-textarea:focus {
+  border-color: #a5b4fc;
+}
+
+.task-word-count {
+  text-align: right;
+  font-size: 0.7rem;
+  color: #aaa;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+/* === Vocab Rest Game === */
+.vocab-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+
+.vocab-hint {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 12px;
+}
+
+.vocab-columns {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.vocab-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vocab-col-header {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-bottom: 2px;
+}
+
+.vocab-word {
+  padding: 8px 6px;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, opacity 0.2s, border-color 0.2s;
+  text-align: center;
+  color: #333;
+}
+
+.vocab-word:hover:not(:disabled) {
+  border-color: #a5b4fc;
+}
+
+.vocab-word:disabled {
+  cursor: default;
+}
+
+.vocab-word--selected {
+  border-color: transparent;
+}
+
+.vocab-reward {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #4338ca;
+  font-weight: 700;
+}
+
+/* === No MP Banner === */
+.no-mp-banner {
+  margin: 0 16px 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+}

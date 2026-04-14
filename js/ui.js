@@ -1,8 +1,9 @@
 import { getState, setState, clearState } from './state.js';
 import { LOCATIONS, ELEMENTS, renderMap } from './map.js';
-import { getTask, renderEasyTask, renderMedTask, lang } from './tasks.js';
+import { getTask, renderEasyTask, renderMedTask, renderHardTask, lang } from './tasks.js';
+import { renderVocabRest } from './vocab.js';
 
-let currentScreen = 'map'; // 'map' | 'task'
+let currentScreen = 'map'; // 'map' | 'task' | 'rest'
 let taskContext = null;     // { task, difficulty, loc }
 
 function getDifficulty(loc) {
@@ -108,7 +109,8 @@ function renderLocationCard() {
   restBtn.className = 'btn-secondary';
   restBtn.textContent = '\u{1F9D8} ' + lang.ui.restBtn;
   restBtn.addEventListener('click', () => {
-    alert('Rest mechanic coming soon!');
+    currentScreen = 'rest';
+    render();
   });
   actions.appendChild(restBtn);
 
@@ -214,6 +216,8 @@ function renderTaskScreen() {
     renderEasyTask(content, task, el.color, onWin, onFail);
   } else if (task.type === 'med') {
     renderMedTask(content, task, el.color, onWin, onFail);
+  } else if (task.type === 'hard') {
+    renderHardTask(content, task, el.color, onWin);
   }
 
   card.appendChild(content);
@@ -232,6 +236,46 @@ function renderTaskScreen() {
   return wrap;
 }
 
+function renderRestScreen() {
+  const wrap = document.createElement('div');
+  wrap.className = 'fade-up';
+  wrap.style.padding = '0 16px';
+
+  const card = document.createElement('div');
+  card.className = 'task-card';
+
+  const content = document.createElement('div');
+  content.className = 'task-content';
+
+  renderVocabRest(content, '#4338ca', () => {
+    const state = getState();
+    setState({ mp: state.mp + 3 });
+    currentScreen = 'map';
+    render();
+  });
+
+  card.appendChild(content);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'btn-secondary task-close-btn';
+  closeBtn.textContent = '\u2190 ' + lang.ui.close;
+  closeBtn.addEventListener('click', () => {
+    currentScreen = 'map';
+    render();
+  });
+  card.appendChild(closeBtn);
+
+  wrap.appendChild(card);
+  return wrap;
+}
+
+function renderNoMpBanner() {
+  const banner = document.createElement('div');
+  banner.className = 'no-mp-banner fade-up';
+  banner.textContent = lang.ui.noMp;
+  return banner;
+}
+
 export function render() {
   const app = document.getElementById('app');
   app.innerHTML = '';
@@ -240,7 +284,13 @@ export function render() {
 
   if (currentScreen === 'task' && taskContext) {
     app.appendChild(renderTaskScreen());
+  } else if (currentScreen === 'rest') {
+    app.appendChild(renderRestScreen());
   } else {
+    const state = getState();
+    if (state.mp === 0) {
+      app.appendChild(renderNoMpBanner());
+    }
     app.appendChild(renderMapScreen());
   }
 }

@@ -18,7 +18,10 @@ export function getTask(difficulty) {
     const pool = lang.medTasks;
     return { type: 'med', data: pool[Math.floor(Math.random() * pool.length)] };
   }
-  // hard — placeholder
+  if (difficulty === 'hard') {
+    const pool = lang.hardTasks;
+    return { type: 'hard', data: pool[Math.floor(Math.random() * pool.length)] };
+  }
   return { type: 'easy', data: lang.easyTasks[0] };
 }
 
@@ -218,6 +221,135 @@ export function renderMedTask(container, task, accent, onWin, onFail) {
   });
 
   container.appendChild(checkBtn);
+}
+
+export function renderHardTask(container, task, accent, onWin) {
+  container.innerHTML = '';
+
+  const prompt = document.createElement('p');
+  prompt.className = 'task-prompt';
+  prompt.textContent = lang.writePrompt;
+  container.appendChild(prompt);
+
+  const question = document.createElement('p');
+  question.className = 'task-hard-question';
+  question.textContent = '\u2753 ' + task.data.q;
+  container.appendChild(question);
+
+  // Starters
+  const starterLabel = document.createElement('p');
+  starterLabel.className = 'task-helper-label';
+  starterLabel.textContent = lang.startWith;
+  container.appendChild(starterLabel);
+
+  const starterRow = document.createElement('div');
+  starterRow.className = 'task-starters';
+
+  const textarea = document.createElement('textarea');
+  textarea.className = 'task-textarea';
+  textarea.rows = 3;
+  textarea.placeholder = 'Write your answer here...';
+
+  for (const st of task.data.st) {
+    const btn = document.createElement('button');
+    btn.className = 'task-starter-btn';
+    btn.textContent = st;
+
+    btn.addEventListener('click', () => {
+      textarea.value = st + ' ';
+      textarea.focus();
+      updateWordCount();
+      updateStarterHighlight();
+    });
+
+    starterRow.appendChild(btn);
+  }
+  container.appendChild(starterRow);
+
+  // Word bank
+  const wbLabel = document.createElement('p');
+  wbLabel.className = 'task-helper-label';
+  wbLabel.textContent = lang.words;
+  container.appendChild(wbLabel);
+
+  const wbRow = document.createElement('div');
+  wbRow.className = 'task-word-bank';
+
+  for (const w of task.data.wb) {
+    const btn = document.createElement('button');
+    btn.className = 'task-wb-btn';
+    btn.style.borderColor = accent;
+    btn.style.color = accent;
+    btn.textContent = w;
+
+    btn.addEventListener('click', () => {
+      textarea.value += w + ' ';
+      textarea.focus();
+      updateWordCount();
+    });
+
+    wbRow.appendChild(btn);
+  }
+  container.appendChild(wbRow);
+
+  // Textarea
+  container.appendChild(textarea);
+
+  // Word count
+  const wordCount = document.createElement('div');
+  wordCount.className = 'task-word-count';
+  wordCount.textContent = '0 words';
+  container.appendChild(wordCount);
+
+  function countWords() {
+    return textarea.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+  }
+
+  function updateWordCount() {
+    const n = countWords();
+    wordCount.textContent = n + ' word' + (n !== 1 ? 's' : '');
+    doneBtn.disabled = n < 3;
+    if (n >= 3) {
+      doneBtn.style.opacity = '1';
+    } else {
+      doneBtn.style.opacity = '0.5';
+    }
+  }
+
+  function updateStarterHighlight() {
+    const val = textarea.value;
+    for (const btn of starterRow.querySelectorAll('.task-starter-btn')) {
+      if (val.startsWith(btn.textContent)) {
+        btn.style.borderColor = accent;
+        btn.style.background = accent + '18';
+      } else {
+        btn.style.borderColor = '#e2e8f0';
+        btn.style.background = '';
+      }
+    }
+  }
+
+  textarea.addEventListener('input', () => {
+    updateWordCount();
+    updateStarterHighlight();
+  });
+
+  // Done button
+  const doneBtn = document.createElement('button');
+  doneBtn.className = 'btn-primary task-check-btn';
+  doneBtn.style.background = accent;
+  doneBtn.textContent = '\u2713 ' + lang.done;
+  doneBtn.disabled = true;
+  doneBtn.style.opacity = '0.5';
+
+  doneBtn.addEventListener('click', () => {
+    if (countWords() < 3) return;
+    doneBtn.disabled = true;
+    textarea.disabled = true;
+    onWin();
+  });
+
+  container.appendChild(doneBtn);
 }
 
 export { lang };
