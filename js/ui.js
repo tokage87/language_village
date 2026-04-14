@@ -236,16 +236,16 @@ function renderTaskScreen() {
     const state = getState();
     const newItems = { ...state.items };
     newItems[loc.el] = (newItems[loc.el] || 0) + 1;
-    setState({ items: newItems, done: state.done + 1 });
+    setState({ items: newItems, done: state.done + 1, pos: 0 });
     lastResult = 'win';
     currentScreen = 'map';
     render();
-    // Check milestones after render so popup appears on top
     const ms = checkMilestones();
     if (ms) showMilestonePopup(ms.poke, ms.milestone);
   };
 
   const onFail = () => {
+    setState({ pos: 0 });
     lastResult = 'fail';
     currentScreen = 'map';
     render();
