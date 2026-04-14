@@ -4,7 +4,7 @@ import { getTask, renderEasyTask, renderMedTask, renderHardTask, lang } from './
 import { renderVocabRest } from './vocab.js';
 import { POKEMONS, renderPokemonPanel } from './pokemon.js';
 
-let currentScreen = 'map'; // 'map' | 'task' | 'rest' | 'pokemon'
+let currentScreen = 'map'; // 'map' | 'task' | 'rest' | 'pokemon' | 'phrases'
 let taskContext = null;     // { task, difficulty, loc }
 let lastResult = null;      // 'win' | 'fail' | null
 
@@ -39,6 +39,7 @@ function renderHeader() {
   header.className = 'header fade-up';
 
   const isPokemonScreen = currentScreen === 'pokemon';
+  const isPhrasesScreen = currentScreen === 'phrases';
 
   header.innerHTML = `
     <h1>\u{1F5FA}\uFE0F ${lang.ui.title}
@@ -46,9 +47,15 @@ function renderHeader() {
     </h1>
     <div class="header-right">
       <div class="mp-badge">\u{1F9B6} ${state.mp}</div>
+      <button class="btn-phrases">\u{1F4D6}</button>
       <button class="btn-pokemon">${isPokemonScreen ? '\u2715 ' + lang.ui.close : '\u{1F43E} ' + lang.ui.pokemon}</button>
     </div>
   `;
+
+  header.querySelector('.btn-phrases').addEventListener('click', () => {
+    currentScreen = isPhrasesScreen ? 'map' : 'phrases';
+    render();
+  });
 
   const pokeBtn = header.querySelector('.btn-pokemon');
   pokeBtn.addEventListener('click', () => {
@@ -308,6 +315,93 @@ function renderPokemonScreen() {
   return wrap;
 }
 
+function renderPhrasesScreen() {
+  const wrap = document.createElement('div');
+  wrap.className = 'fade-up phrases-panel';
+  wrap.style.padding = '0 16px';
+
+  // --- Easy ---
+  const easySection = document.createElement('div');
+  easySection.className = 'phrases-section';
+  easySection.innerHTML = `<h3 class="phrases-heading phrases-heading--easy">${lang.ui.easy} &mdash; Fill in the blank</h3>`;
+  const easyList = document.createElement('div');
+  easyList.className = 'phrases-list';
+  for (const task of lang.easyTasks) {
+    const [sentence, correct] = task;
+    const row = document.createElement('div');
+    row.className = 'phrases-row';
+    row.innerHTML = `<span class="phrases-sentence">${sentence.replace('___', '<b class="phrases-answer">' + correct + '</b>')}</span>`;
+    easyList.appendChild(row);
+  }
+  easySection.appendChild(easyList);
+  wrap.appendChild(easySection);
+
+  // --- Medium ---
+  const medSection = document.createElement('div');
+  medSection.className = 'phrases-section';
+  medSection.innerHTML = `<h3 class="phrases-heading phrases-heading--med">${lang.ui.medium} &mdash; Put in order</h3>`;
+  const medList = document.createElement('div');
+  medList.className = 'phrases-list';
+  for (const task of lang.medTasks) {
+    const row = document.createElement('div');
+    row.className = 'phrases-row';
+    row.innerHTML = `
+      <span class="phrases-hint">${task.q}</span>
+      <span class="phrases-sentence"><b>${task.w.join(' ')}</b></span>
+    `;
+    medList.appendChild(row);
+  }
+  medSection.appendChild(medList);
+  wrap.appendChild(medSection);
+
+  // --- Hard ---
+  const hardSection = document.createElement('div');
+  hardSection.className = 'phrases-section';
+  hardSection.innerHTML = `<h3 class="phrases-heading phrases-heading--hard">${lang.ui.hard} &mdash; Answer the question</h3>`;
+  const hardList = document.createElement('div');
+  hardList.className = 'phrases-list';
+  for (const task of lang.hardTasks) {
+    const row = document.createElement('div');
+    row.className = 'phrases-row';
+    row.innerHTML = `
+      <span class="phrases-hint">${task.q}</span>
+      <span class="phrases-starters">${task.st.map(s => '<i>' + s + '...</i>').join(' / ')}</span>
+      <span class="phrases-words">${task.wb.join(', ')}</span>
+    `;
+    hardList.appendChild(row);
+  }
+  hardSection.appendChild(hardList);
+  wrap.appendChild(hardSection);
+
+  // --- Vocab ---
+  const vocabSection = document.createElement('div');
+  vocabSection.className = 'phrases-section';
+  vocabSection.innerHTML = `<h3 class="phrases-heading phrases-heading--vocab">\u{1F9D8} Vocab &mdash; EN / PL</h3>`;
+  const vocabGrid = document.createElement('div');
+  vocabGrid.className = 'phrases-vocab-grid';
+  for (const pair of lang.vocab) {
+    const row = document.createElement('div');
+    row.className = 'phrases-vocab-row';
+    row.innerHTML = `<span class="phrases-vocab-en">${pair.en}</span><span class="phrases-vocab-pl">${pair.pl}</span>`;
+    vocabGrid.appendChild(row);
+  }
+  vocabSection.appendChild(vocabGrid);
+  wrap.appendChild(vocabSection);
+
+  // Close
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'btn-secondary task-close-btn';
+  closeBtn.style.margin = '16px 0 24px';
+  closeBtn.textContent = '\u2190 ' + lang.ui.close;
+  closeBtn.addEventListener('click', () => {
+    currentScreen = 'map';
+    render();
+  });
+  wrap.appendChild(closeBtn);
+
+  return wrap;
+}
+
 function renderNoMpBanner() {
   const banner = document.createElement('div');
   banner.className = 'no-mp-banner fade-up';
@@ -327,6 +421,8 @@ export function render() {
     app.appendChild(renderRestScreen());
   } else if (currentScreen === 'pokemon') {
     app.appendChild(renderPokemonScreen());
+  } else if (currentScreen === 'phrases') {
+    app.appendChild(renderPhrasesScreen());
   } else {
     const state = getState();
     if (state.mp === 0) {

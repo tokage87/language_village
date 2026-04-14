@@ -128,6 +128,114 @@ body {
   color: #166534;
 }
 
+.btn-phrases {
+  background: #eff6ff;
+  border: 2px solid #bfdbfe;
+  border-radius: 12px;
+  padding: 6px 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* === Phrases Panel === */
+.phrases-section {
+  background: white;
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+
+.phrases-heading {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.phrases-heading--easy { color: #f59e0b; }
+.phrases-heading--med { color: #3b82f6; }
+.phrases-heading--hard { color: #ef4444; }
+.phrases-heading--vocab { color: #8b5cf6; }
+
+.phrases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.phrases-row {
+  padding: 6px 8px;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.phrases-sentence {
+  color: #1e293b;
+}
+
+.phrases-answer {
+  color: #16a34a;
+  font-weight: 800;
+}
+
+.phrases-hint {
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.phrases-starters {
+  font-size: 0.75rem;
+  color: #475569;
+}
+
+.phrases-starters i {
+  font-style: italic;
+  color: #3b82f6;
+}
+
+.phrases-words {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.phrases-vocab-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.phrases-vocab-row {
+  display: contents;
+}
+
+.phrases-vocab-en {
+  padding: 4px 8px;
+  background: #eff6ff;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.phrases-vocab-pl {
+  padding: 4px 8px;
+  background: #fef2f2;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #991b1b;
+}
+
 /* === Items Bar === */
 .items-bar {
   display: flex;
