@@ -149,17 +149,10 @@ body {
 .game-map {
   position: relative;
   padding-top: 90%;
-  background:
-    radial-gradient(ellipse at 50% 8%, #b3e5fc44 0%, transparent 20%),
-    radial-gradient(ellipse at 50% 92%, #ff8a6518 0%, transparent 18%),
-    radial-gradient(circle at 50% 50%, #c8e6c9 0%, #a5d6a7 25%, #81c784 50%, #66bb6a 75%, #4caf50 100%);
+  background: linear-gradient(135deg, #e8f5e9, #a5d6a7);
   border-radius: 20px;
   overflow: hidden;
   margin: 0 16px;
-  box-shadow:
-    inset 0 0 30px rgba(0,0,0,0.12),
-    0 4px 20px rgba(0,0,0,0.15);
-  border: 3px solid #33691e;
 }
 
 .game-map svg {
@@ -170,30 +163,6 @@ body {
   height: 100%;
 }
 
-/* === Walking Character === */
-.map-character {
-  position: absolute;
-  font-size: 1.6rem;
-  z-index: 20;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-}
-
-.map-character--walking {
-  transition: left 0.5s ease-in-out, top 0.5s ease-in-out;
-}
-
-@keyframes bobWalk {
-  0%, 100% { transform: translate(-50%, -50%) translateY(0); }
-  50%      { transform: translate(-50%, -50%) translateY(-3px); }
-}
-
-.map-character--walking {
-  animation: bobWalk 0.25s ease-in-out 2;
-}
-
-/* === Map Nodes === */
 .map-node {
   position: absolute;
   border-radius: 50%;
@@ -215,23 +184,23 @@ body {
 .map-node--current {
   width: 52px;
   height: 52px;
-  background: rgba(255,255,255,0.95);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.25), 0 0 0 2px rgba(255,255,255,0.6);
+  background: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   z-index: 10;
   animation: float 3s ease-in-out infinite;
 }
 
 .map-node--reachable {
-  width: 44px;
-  height: 44px;
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18), 0 0 0 2px rgba(255,255,255,0.4);
+  width: 42px;
+  height: 42px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .map-node--locked {
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.35);
+  width: 42px;
+  height: 42px;
+  background: rgba(255, 255, 255, 0.4);
   cursor: default;
 }
 
@@ -249,7 +218,11 @@ body {
   color: #4338ca;
 }
 
-/* pin removed — character emoji replaces it */
+.map-node__pin {
+  position: absolute;
+  top: -14px;
+  font-size: 0.7rem;
+}
 
 /* === Location Card === */
 .loc-card {
@@ -910,9 +883,5 @@ body {
   .poke-mini-badge {
     font-size: 0.5rem;
     padding: 3px 0;
-  }
-
-  .map-character {
-    font-size: 1.3rem;
   }
 }
