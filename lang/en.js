@@ -225,4 +225,5 @@ export default {
   milestoneTitle: "Osi\u0105gni\u0119cie! / Achievement!",
   milestoneBtn: "Super!",
   correctAnswer: "Poprawna odpowied\u017a / Correct answer:",
+  partialAnswer: "Prawie! Spr\u00f3buj u\u017cy\u0107 wi\u0119cej s\u0142\u00f3w / Almost! Try using more words:",
 };

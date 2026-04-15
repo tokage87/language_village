@@ -201,7 +201,7 @@ export function renderMedTask(container, task, accent, onWin, onFail) {
     const extras = task.data.x || [];
     const correctWords = task.data.w;
 
-    // Accept if: min 3 words, no distractor words, all words come from w
+    // Check if all placed words come from w (no distractors)
     const hasExtra = builtWords.some(w => extras.includes(w));
     const correctPool = [...correctWords];
     let allFromW = true;
@@ -210,24 +210,55 @@ export function renderMedTask(container, task, accent, onWin, onFail) {
       if (idx === -1) { allFromW = false; break; }
       correctPool.splice(idx, 1);
     }
+
+    const usedAllWords = allFromW && builtWords.length === correctWords.length;
+    const isPartial = !hasExtra && allFromW && builtWords.length >= 3 && builtWords.length < correctWords.length;
     const isCorrect = !hasExtra && allFromW && builtWords.length >= 3;
 
-    if (isCorrect) {
+    if (usedAllWords) {
+      // Full correct — all words used, green, reward
       buildZone.style.background = '#dcfce7';
       buildZone.style.borderColor = '#86efac';
       checkBtn.disabled = true;
       correctDiv.style.display = 'none';
       setTimeout(onWin, 800);
+    } else if (isPartial) {
+      // Partial — correct words but incomplete, yellow, no reward
+      buildZone.style.background = '#fef9c3';
+      buildZone.style.borderColor = '#fde047';
+
+      correctDiv.style.display = '';
+      correctDiv.className = 'task-partial-answer';
+      correctDiv.innerHTML = `<span class="task-partial-label">${lang.partialAnswer}</span> <strong>${correctWords.join(' ')}</strong>`;
+
+      setTimeout(() => {
+        buildZone.style.background = '';
+        buildZone.style.borderColor = '#cbd5e1';
+        correctDiv.style.display = 'none';
+        correctDiv.className = 'task-correct-answer';
+        for (const b of built) {
+          b.poolBtn.style.display = '';
+        }
+        built.length = 0;
+        for (const tag of [...buildZone.querySelectorAll('.task-build-word')]) {
+          tag.remove();
+        }
+        refreshPlaceholder();
+        const poolBtns = [...pool.children];
+        const shuffled = shuffle(poolBtns);
+        pool.innerHTML = '';
+        for (const b of shuffled) pool.appendChild(b);
+      }, 2500);
     } else {
+      // Wrong — distractor used or invalid words, red
       buildZone.style.background = '#fee2e2';
       buildZone.style.borderColor = '#fca5a5';
 
-      // Show correct answer
       correctDiv.style.display = '';
+      correctDiv.className = 'task-correct-answer';
       correctDiv.innerHTML = `<span class="task-correct-label">${lang.correctAnswer}</span> <strong>${correctWords.join(' ')}</strong>`;
 
       setTimeout(() => {
-        // Reset
         buildZone.style.background = '';
         buildZone.style.borderColor = '#cbd5e1';
         for (const b of built) {

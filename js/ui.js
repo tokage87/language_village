@@ -236,7 +236,7 @@ function renderTaskScreen() {
     const state = getState();
     const newItems = { ...state.items };
     newItems[loc.el] = (newItems[loc.el] || 0) + 1;
-    setState({ items: newItems, done: state.done + 1, pos: 0 });
+    setState({ items: newItems, done: state.done + 1 });
     lastResult = 'win';
     currentScreen = 'map';
     render();
@@ -245,7 +245,6 @@ function renderTaskScreen() {
   };
 
   const onFail = () => {
-    setState({ pos: 0 });
     lastResult = 'fail';
     currentScreen = 'map';
     render();

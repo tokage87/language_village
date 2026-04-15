@@ -844,6 +844,26 @@ body {
   margin-bottom: 2px;
 }
 
+.task-partial-answer {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #fefce8;
+  border: 2px solid #fde047;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: #854d0e;
+  line-height: 1.5;
+  animation: fadeUp 0.3s ease both;
+}
+
+.task-partial-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #a16207;
+  margin-bottom: 2px;
+}
+
 .task-check-btn {
   width: 100%;
   margin-top: 4px;
