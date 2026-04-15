@@ -87,13 +87,18 @@ export function renderEasyTask(container, task, accent, onWin, onFail) {
             b.style.borderColor = '#86efac';
           }
         }
-        // Show correct sentence below
+        // Show correct sentence + try again button
         const correctSentence = sentence.replace('___', correct);
         const correctDiv = document.createElement('div');
         correctDiv.className = 'task-correct-answer';
         correctDiv.innerHTML = `<span class="task-correct-label">${lang.correctAnswer}</span> <strong>${correctSentence}</strong>`;
         container.appendChild(correctDiv);
-        setTimeout(onFail, 2500);
+
+        const retryBtn = document.createElement('button');
+        retryBtn.className = 'btn-secondary task-retry-btn';
+        retryBtn.textContent = '\u{1F504} ' + lang.tryAgain;
+        retryBtn.addEventListener('click', () => onFail());
+        container.appendChild(retryBtn);
       }
     });
 
@@ -196,6 +201,33 @@ export function renderMedTask(container, task, accent, onWin, onFail) {
   correctDiv.style.display = 'none';
   container.appendChild(correctDiv);
 
+  // Retry button (shown after wrong/partial)
+  const retryBtn = document.createElement('button');
+  retryBtn.className = 'btn-secondary task-retry-btn';
+  retryBtn.textContent = '\u{1F504} ' + lang.tryAgain;
+  retryBtn.style.display = 'none';
+  retryBtn.addEventListener('click', () => {
+    buildZone.style.background = '';
+    buildZone.style.borderColor = '#cbd5e1';
+    correctDiv.style.display = 'none';
+    correctDiv.className = 'task-correct-answer';
+    retryBtn.style.display = 'none';
+    checkBtn.disabled = false;
+    for (const b of built) {
+      b.poolBtn.style.display = '';
+    }
+    built.length = 0;
+    for (const tag of [...buildZone.querySelectorAll('.task-build-word')]) {
+      tag.remove();
+    }
+    refreshPlaceholder();
+    const poolBtns = [...pool.children];
+    const shuffled = shuffle(poolBtns);
+    pool.innerHTML = '';
+    for (const b of shuffled) pool.appendChild(b);
+  });
+  container.appendChild(retryBtn);
+
   checkBtn.addEventListener('click', () => {
     const builtWords = built.map(b => b.word);
     const extras = task.data.x || [];
@@ -226,54 +258,24 @@ export function renderMedTask(container, task, accent, onWin, onFail) {
       // Partial — correct words but incomplete, yellow, no reward
       buildZone.style.background = '#fef9c3';
       buildZone.style.borderColor = '#fde047';
+      checkBtn.disabled = true;
 
       correctDiv.style.display = '';
       correctDiv.className = 'task-partial-answer';
       correctDiv.innerHTML = `<span class="task-partial-label">${lang.partialAnswer}</span> <strong>${correctWords.join(' ')}</strong>`;
 
-      setTimeout(() => {
-        buildZone.style.background = '';
-        buildZone.style.borderColor = '#cbd5e1';
-        correctDiv.style.display = 'none';
-        correctDiv.className = 'task-correct-answer';
-        for (const b of built) {
-          b.poolBtn.style.display = '';
-        }
-        built.length = 0;
-        for (const tag of [...buildZone.querySelectorAll('.task-build-word')]) {
-          tag.remove();
-        }
-        refreshPlaceholder();
-        const poolBtns = [...pool.children];
-        const shuffled = shuffle(poolBtns);
-        pool.innerHTML = '';
-        for (const b of shuffled) pool.appendChild(b);
-      }, 2500);
+      retryBtn.style.display = '';
     } else {
       // Wrong — distractor used or invalid words, red
       buildZone.style.background = '#fee2e2';
       buildZone.style.borderColor = '#fca5a5';
+      checkBtn.disabled = true;
 
       correctDiv.style.display = '';
       correctDiv.className = 'task-correct-answer';
       correctDiv.innerHTML = `<span class="task-correct-label">${lang.correctAnswer}</span> <strong>${correctWords.join(' ')}</strong>`;
 
-      setTimeout(() => {
-        buildZone.style.background = '';
-        buildZone.style.borderColor = '#cbd5e1';
-        for (const b of built) {
-          b.poolBtn.style.display = '';
-        }
-        built.length = 0;
-        for (const tag of [...buildZone.querySelectorAll('.task-build-word')]) {
-          tag.remove();
-        }
-        refreshPlaceholder();
-        const poolBtns = [...pool.children];
-        const shuffled = shuffle(poolBtns);
-        pool.innerHTML = '';
-        for (const b of shuffled) pool.appendChild(b);
-      }, 2500);
+      retryBtn.style.display = '';
     }
   });
 

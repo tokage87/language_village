@@ -10,15 +10,29 @@ let lastResult = null;      // 'win' | 'fail' | null
 
 function getDifficulty(loc) {
   const state = getState();
-  const maxEvo = Math.max(...Object.values(state.evo));
 
+  // Per-element difficulty: find the pokemon tied to this element
+  const poke = POKEMONS.find(p => p.el === loc.el);
+  const evoLevel = poke ? (state.evo[poke.id] || 0) : 0;
+
+  let base;
   if (loc.diff === 1) {
-    return maxEvo < 1 ? 'easy' : 'med';
+    base = evoLevel < 1 ? 'easy' : 'med';
+  } else if (loc.diff === 2) {
+    base = evoLevel < 2 ? 'med' : 'hard';
+  } else {
+    return 'easy';
   }
-  if (loc.diff === 2) {
-    return maxEvo < 2 ? 'med' : 'hard';
-  }
-  return 'easy';
+
+  // Mix: 70% base, 20% one level down, 10% one level up
+  const levels = ['easy', 'med', 'hard'];
+  const baseIdx = levels.indexOf(base);
+  const roll = Math.random();
+
+  if (roll < 0.70) return base;
+  if (roll < 0.90 && baseIdx > 0) return levels[baseIdx - 1];
+  if (baseIdx < 2) return levels[baseIdx + 1];
+  return base;
 }
 
 function diffLabel(difficulty) {

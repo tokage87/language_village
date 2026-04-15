@@ -869,6 +869,13 @@ body {
   margin-top: 4px;
 }
 
+.task-retry-btn {
+  width: 100%;
+  margin-top: 8px;
+  text-align: center;
+  animation: fadeUp 0.3s ease both;
+}
+
 .task-close-btn {
   width: 100%;
   margin-top: 8px;
