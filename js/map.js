@@ -1,5 +1,6 @@
 import { getState, setState } from './state.js';
 import { render } from './ui.js';
+import { POKEMONS } from './pokemon.js';
 
 export const LOCATIONS = [
   { id: 0, name: 'Village',  icon: '\u{1F3D8}\uFE0F', x: 50, y: 50, el: null,       diff: 0, adj: [1, 2, 3, 4] },
@@ -168,6 +169,43 @@ function buildPath(x1, y1, x2, y2) {
   return g;
 }
 
+function buildPokemonCorners(mapDiv) {
+  const state = getState();
+  // Map each pokemon to a corner; order matches POKEMONS:
+  // pikachu -> top-right, bulbasaur -> top-left, charmander -> bottom-left, eevee -> bottom-right
+  const cornerMap = {
+    pikachu:    'tr',
+    bulbasaur:  'tl',
+    charmander: 'bl',
+    eevee:      'br',
+  };
+
+  for (const poke of POKEMONS) {
+    const corner = cornerMap[poke.id];
+    if (!corner) continue;
+    const el = ELEMENTS[poke.el];
+    const stage = state.evo[poke.id] || 0;
+    const isMax = stage >= 2;
+    const need = isMax ? 0 : poke.needs[stage];
+    const have = state.items[poke.el] || 0;
+    const pct = isMax ? 100 : Math.min(100, Math.round((have / need) * 100));
+
+    const badge = document.createElement('div');
+    badge.className = `map-corner map-corner--${corner}`;
+    badge.style.borderColor = el.color;
+    badge.title = `${poke.stages[stage]} — ${isMax ? 'MAX' : have + '/' + need + ' ' + el.item}`;
+
+    badge.innerHTML = `
+      <div class="map-corner__icon">${poke.icons[stage]}</div>
+      <div class="map-corner__bar">
+        <div class="map-corner__fill" style="width:${pct}%; background:${el.color};"></div>
+      </div>
+      <div class="map-corner__text">${isMax ? '\u{1F3C6} MAX' : have + '/' + need}</div>
+    `;
+    mapDiv.appendChild(badge);
+  }
+}
+
 function buildCharacter(x, y, fromX, fromY) {
   const character = document.createElement('div');
   character.className = 'map-character';
@@ -273,6 +311,9 @@ export function renderMap(container) {
   );
   mapDiv.appendChild(charEl);
   prevPos = null;
+
+  // Pokemon progress badges in corners
+  buildPokemonCorners(mapDiv);
 
   // Location nodes
   for (const loc of LOCATIONS) {
