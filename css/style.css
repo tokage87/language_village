@@ -827,6 +827,12 @@ body {
   font-weight: 600;
 }
 
+.task-word-target {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
 .task-build-zone {
   min-height: 44px;
   border: 2px dashed #cbd5e1;

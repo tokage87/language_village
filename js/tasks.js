@@ -118,7 +118,7 @@ export function renderMedTask(container, task, accent, onWin, onFail) {
 
   const hint = document.createElement('p');
   hint.className = 'task-hint';
-  hint.innerHTML = '\u{1F4A1} ' + task.data.q;
+  hint.innerHTML = '\u{1F4A1} ' + task.data.q + ` <span class="task-word-target">(${task.data.w.length} words)</span>`;
   container.appendChild(hint);
 
   const buildZone = document.createElement('div');
