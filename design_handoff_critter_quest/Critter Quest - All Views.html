@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Critter Quest — All Views</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  html,body { margin: 0; height: 100%; font-family: system-ui, sans-serif; background: #f0eee9; -webkit-font-smoothing: none; font-smooth: never; }
+  * { box-sizing: border-box; }
+  /* Force crisp pixels everywhere inside artboards */
+  .pixel-on, .pixel-on * { image-rendering: pixelated; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="critter-views.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+  const { MapViewA, MapViewB, TaskViewA, TaskViewB, CollectionViewA, CollectionViewB } = window.CritterViews;
+
+  function App() {
+    return (
+      <DesignCanvas>
+        <div style={{ padding: '20px 60px 30px', maxWidth: 900 }}>
+          <div style={{ fontSize: 30, fontWeight: 700, color: '#1a1420', letterSpacing: -0.5 }}>
+            Critter Quest — retro pixel-art redesign
+          </div>
+          <div style={{ fontSize: 14, color: '#6b5a50', marginTop: 8, lineHeight: 1.5 }}>
+            Original creatures (Voltpip / Leafling / Emberpup / Sparklet) replacing copyrighted branding.
+            Press Start 2P headings + VT323 body. 4-color-per-element palette (fire/leaf/spark/shine).
+            Two variations per view — <b>A</b> is warm paper/daylight, <b>B</b> is RPG-dusk with classic dialog-box chrome.
+          </div>
+        </div>
+
+        <DCSection title="① Overworld Map" subtitle="Village + 8 locations · sand beach · wandering villagers & mini critters">
+          <DCArtboard label="A · Daylight / paper">
+            <div className="pixel-on"><MapViewA/></div>
+          </DCArtboard>
+          <DCArtboard label="B · Dusk / RPG frame">
+            <div className="pixel-on"><MapViewB/></div>
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection title="② Task / Quiz Screen" subtitle="Fill-in-the-blank grammar task at the Campfire location">
+          <DCArtboard label="A · Card style (close to original)">
+            <div className="pixel-on"><TaskViewA/></div>
+          </DCArtboard>
+          <DCArtboard label="B · RPG battle dialog">
+            <div className="pixel-on"><TaskViewB/></div>
+          </DCArtboard>
+          <DCPostIt top={60} left={-40} rotate={-4} width={170}>
+            Tap an answer → correct one flashes green + MP awarded.
+          </DCPostIt>
+        </DCSection>
+
+        <DCSection title="③ Critter Collection" subtitle="Progress per creature · stage dots · hidden badges">
+          <DCArtboard label="A · Roster grid">
+            <div className="pixel-on"><CollectionViewA/></div>
+          </DCArtboard>
+          <DCArtboard label="B · Dex-book layout">
+            <div className="pixel-on"><CollectionViewB/></div>
+          </DCArtboard>
+        </DCSection>
+
+        <div style={{ padding: '10px 60px 80px', maxWidth: 900, fontSize: 13, color: '#6b5a50', lineHeight: 1.6 }}>
+          <b>System notes:</b> All sprites are drawn as CSS grids of 3-6px squares — no SVG, no bitmaps — so every view stays crisp at any zoom.
+          Palette limited to ~16 colors (4 per element + paper/ink/grass). Drop-shadows are hard 2-3px offsets, never blurred.
+          The B-series reuses the same components with a dusk/night filter + dialog-box chrome, so switching themes is one prop.
+        </div>
+      </DesignCanvas>
+    );
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

@@ -1,0 +1,1422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Critter Quest — English Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  :root {
+    /* core palette */
+    --ink: #1a1420;
+    --ink-2: #3d2b3f;
+    --paper: #f4e8c8;
+    --paper-2: #e8d8a8;
+
+    /* grass/terrain */
+    --grass-1: #a8d858;
+    --grass-2: #8fc74a;
+    --grass-3: #6ba832;
+    --grass-4: #4a7c2a;
+    --grass-dark: #2d5020;
+
+    /* path */
+    --path-1: #f0d890;
+    --path-2: #d8b868;
+    --path-3: #a88844;
+
+    /* water */
+    --water-1: #8fe0f0;
+    --water-2: #4ab8d8;
+    --water-3: #2870a8;
+
+    /* sand */
+    --sand-1: #f8e4b0;
+    --sand-2: #d8b870;
+
+    /* stone */
+    --stone-1: #b8b0a8;
+    --stone-2: #786c68;
+
+    /* elements */
+    --fire: #e54b4b;
+    --fire-2: #f89040;
+    --leaf: #6fb544;
+    --leaf-2: #a8d858;
+    --spark: #f4c430;
+    --spark-2: #fce078;
+    --shine: #b572d9;
+    --shine-2: #d8a8e8;
+    --water-el: #4ab8d8;
+
+    --ui-bg: #fff4d8;
+    --ui-bg-2: #e8d8a8;
+    --ui-border: #3d2b3f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    font-family: 'VT323', monospace;
+    background: #1a1420;
+    color: var(--ink);
+    image-rendering: pixelated;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: none;
+    font-smooth: never;
+  }
+
+  body {
+    background:
+      repeating-linear-gradient(0deg, #120c18 0 2px, #1a1420 2px 4px);
+    min-height: 100vh;
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+  }
+
+  #root { width: 100%; max-width: 720px; }
+
+  /* Pixel font utilities */
+  .pixel { font-family: 'Press Start 2P', monospace; }
+  .big   { font-family: 'VT323', monospace; }
+
+  /* Hard pixel border (no rounded, layered outline) */
+  .panel {
+    background: var(--ui-bg);
+    border: 3px solid var(--ui-border);
+    box-shadow:
+      0 0 0 3px var(--ui-bg),
+      0 0 0 6px var(--ui-border),
+      6px 6px 0 6px rgba(0,0,0,.35);
+    position: relative;
+  }
+
+  /* small panel (single-border) */
+  .chip {
+    background: var(--ui-bg);
+    border: 3px solid var(--ui-border);
+    box-shadow: 3px 3px 0 0 rgba(0,0,0,.35);
+    padding: 6px 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    line-height: 1;
+    color: var(--ink);
+    cursor: default;
+    user-select: none;
+  }
+
+  /* Pixel corner trim — adds the classic "notched" look */
+  .notch {
+    position: relative;
+  }
+  .notch::before, .notch::after {
+    content: "";
+    position: absolute;
+    width: 6px; height: 6px;
+    background: var(--ui-border);
+  }
+  .notch::before { top: -3px; left: -3px; box-shadow: 6px 0 0 var(--ui-border), 0 6px 0 var(--ui-border); }
+  .notch::after  { bottom: -3px; right: -3px; box-shadow: -6px 0 0 var(--ui-border), 0 -6px 0 var(--ui-border); }
+
+  /* Buttons */
+  .btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--ink);
+    background: var(--spark-2);
+    border: 3px solid var(--ui-border);
+    padding: 12px 16px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 0 var(--ink);
+    transition: transform 60ms ease, box-shadow 60ms ease;
+    image-rendering: pixelated;
+    letter-spacing: 0.5px;
+  }
+  .btn:hover { transform: translate(1px, 1px); box-shadow: 3px 3px 0 0 var(--ink); }
+  .btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 0 var(--ink); }
+  .btn:disabled { filter: grayscale(0.6) brightness(0.9); cursor: not-allowed; }
+
+  .btn.fire  { background: #ffb070; }
+  .btn.leaf  { background: #c8e890; }
+  .btn.water { background: #9ee0f0; }
+  .btn.spark { background: #fce078; }
+  .btn.shine { background: #e0b8f0; }
+
+  /* MAP */
+  .map-frame {
+    position: relative;
+    background: var(--grass-3);
+    border: 4px solid var(--ink);
+    box-shadow:
+      inset 0 0 0 4px #2d5020,
+      inset 0 0 0 8px #6ba832,
+      6px 6px 0 0 rgba(0,0,0,.35);
+    padding: 14px;
+    image-rendering: pixelated;
+  }
+
+  .map-canvas {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    image-rendering: pixelated;
+    overflow: hidden;
+    border: 3px solid #2d5020;
+    background:
+      /* subtle grass dapple */
+      radial-gradient(circle at 25% 30%, rgba(255,255,255,.06) 0 2px, transparent 3px),
+      radial-gradient(circle at 70% 60%, rgba(255,255,255,.05) 0 2px, transparent 3px),
+      /* grass tile pattern - using repeating steps */
+      repeating-linear-gradient(0deg,  var(--grass-2) 0 8px, var(--grass-3) 8px 16px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,.04) 0 8px, transparent 8px 16px);
+  }
+
+  /* Pixel grass texture layer (tiny tufts) */
+  .map-canvas::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      /* random tufts as tiny radial dots */
+      radial-gradient(circle at 10% 15%, var(--grass-dark) 1px, transparent 2px),
+      radial-gradient(circle at 22% 70%, var(--grass-dark) 1px, transparent 2px),
+      radial-gradient(circle at 35% 40%, var(--grass-dark) 1px, transparent 2px),
+      radial-gradient(circle at 48% 85%, var(--grass-dark) 1px, transparent 2px),
+      radial-gradient(circle at 60% 10%, var(--grass-dark) 1px, transparent 2px),
+      radial-gradient(circle at 75% 35%, var(--grass-dark) 1px, transparent 2px),
+      radial-gradient(circle at 88% 75%, var(--grass-dark) 1px, transparent 2px),
+      radial-gradient(circle at 92% 22%, var(--grass-dark) 1px, transparent 2px),
+      radial-gradient(circle at 5% 55%, var(--grass-dark) 1px, transparent 2px);
+    pointer-events: none;
+    opacity: .6;
+  }
+
+  /* Water pond (top) - pixelated blocks */
+  .water-tile {
+    position: absolute;
+    background:
+      repeating-linear-gradient(0deg, var(--water-1) 0 4px, var(--water-2) 4px 8px),
+      var(--water-2);
+    border: 3px solid var(--water-3);
+    box-shadow: inset 0 0 0 3px var(--water-1);
+    image-rendering: pixelated;
+  }
+
+  /* Sand beach tile */
+  .sand-tile {
+    position: absolute;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(168,136,68,.35) 1px, transparent 2px),
+      radial-gradient(circle at 60% 70%, rgba(168,136,68,.35) 1px, transparent 2px),
+      radial-gradient(circle at 80% 20%, rgba(168,136,68,.35) 1px, transparent 2px),
+      radial-gradient(circle at 35% 85%, rgba(168,136,68,.35) 1px, transparent 2px),
+      repeating-linear-gradient(45deg, var(--sand-1) 0 4px, var(--sand-2) 4px 8px);
+    border: 3px solid #a88844;
+    box-shadow: inset 0 0 0 2px var(--sand-1);
+    image-rendering: pixelated;
+  }
+
+  /* Wandering sprite (NPCs & critters walking on the map) */
+  .walker {
+    position: absolute;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    image-rendering: pixelated;
+    z-index: 3;
+  }
+  @keyframes walkBob {
+    0%,100% { transform: translate(-50%, -50%) translateY(0); }
+    50%     { transform: translate(-50%, -50%) translateY(-1.5px); }
+  }
+  .walker > div { animation: walkBob 0.4s steps(2) infinite; }
+
+  /* Different walk patterns (each walker gets one at random) */
+  @keyframes roamA { 0%   { left: 20%; top: 82%; }
+                     25%  { left: 55%; top: 80%; }
+                     50%  { left: 62%; top: 55%; }
+                     75%  { left: 40%; top: 58%; }
+                     100% { left: 20%; top: 82%; } }
+  @keyframes roamB { 0%   { left: 82%; top: 42%; }
+                     33%  { left: 78%; top: 62%; }
+                     66%  { left: 55%; top: 65%; }
+                     100% { left: 82%; top: 42%; } }
+  @keyframes roamC { 0%   { left: 18%; top: 42%; }
+                     50%  { left: 28%; top: 62%; }
+                     100% { left: 18%; top: 42%; } }
+  @keyframes roamD { 0%   { left: 50%; top: 25%; }
+                     50%  { left: 58%; top: 42%; }
+                     100% { left: 50%; top: 25%; } }
+  @keyframes roamE { 0%   { left: 38%; top: 14%; }
+                     50%  { left: 60%; top: 18%; }
+                     100% { left: 38%; top: 14%; } }
+  .roam-a { animation: roamA 18s linear infinite; }
+  .roam-b { animation: roamB 14s linear infinite; }
+  .roam-c { animation: roamC 12s linear infinite; }
+  .roam-d { animation: roamD 10s linear infinite; }
+  .roam-e { animation: roamE 16s linear infinite; }
+
+  /* Paths between nodes - pixelated dashed roads */
+  .path-line {
+    position: absolute;
+    background:
+      repeating-linear-gradient(
+        to right,
+        var(--path-2) 0 8px,
+        var(--path-3) 8px 12px,
+        var(--path-2) 12px 20px
+      );
+    border-top: 3px solid var(--path-3);
+    border-bottom: 3px solid var(--path-3);
+    height: 14px;
+    transform-origin: 0 50%;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px var(--path-1);
+  }
+
+  /* Trees / decor */
+  .decor {
+    position: absolute;
+    image-rendering: pixelated;
+    pointer-events: none;
+  }
+
+  /* Node (location) */
+  .node {
+    position: absolute;
+    width: 72px; height: 80px;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    image-rendering: pixelated;
+    transition: transform 80ms ease;
+  }
+  .node:hover { transform: translate(-50%, calc(-50% - 3px)); }
+  .node.active .node-tile { box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--ink), 0 0 0 9px var(--spark), 4px 4px 0 9px rgba(0,0,0,.3); }
+
+  .node-tile {
+    width: 56px; height: 48px;
+    background: var(--ui-bg);
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 0 rgba(0,0,0,.4);
+    display: grid;
+    place-items: center;
+    image-rendering: pixelated;
+    position: relative;
+    overflow: hidden;
+  }
+  .node-label {
+    margin-top: 5px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: #fff;
+    text-shadow:
+      -1px -1px 0 var(--ink),
+       1px -1px 0 var(--ink),
+      -1px  1px 0 var(--ink),
+       1px  1px 0 var(--ink),
+       0    2px 0 var(--ink);
+    text-align: center;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .node-cost {
+    margin-top: 3px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    color: var(--spark-2);
+    text-shadow: 1px 1px 0 var(--ink);
+  }
+
+  /* Corner badges on the frame */
+  .corner-badge {
+    position: absolute;
+    width: 56px; height: 56px;
+    background: var(--ui-bg);
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 0 rgba(0,0,0,.35);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    z-index: 5;
+  }
+  .corner-badge.tl { top: -10px; left: -10px; border-color: var(--leaf); }
+  .corner-badge.tr { top: -10px; right: -10px; border-color: var(--spark); }
+  .corner-badge.bl { bottom: -10px; left: -10px; border-color: var(--fire); }
+  .corner-badge.br { bottom: -10px; right: -10px; border-color: var(--shine); }
+
+  .corner-badge .count {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--ink);
+  }
+
+  /* Pixel sprite wrapper — forces crisp edges */
+  .sprite {
+    display: inline-block;
+    image-rendering: pixelated;
+  }
+
+  /* Top stat-pills row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 10px 0 12px;
+  }
+  .stat-pill {
+    background: var(--ui-bg);
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 0 rgba(0,0,0,.35);
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: var(--ink);
+  }
+  .stat-pill.fire  { border-color: var(--fire); background: #fff0e4; }
+  .stat-pill.leaf  { border-color: var(--leaf); background: #effbe0; }
+  .stat-pill.spark { border-color: var(--spark); background: #fffbdc; }
+  .stat-pill.shine { border-color: var(--shine); background: #f7ecfc; }
+
+  /* Top header */
+  header.topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--ui-bg);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 0 rgba(0,0,0,.35);
+    margin-bottom: 12px;
+  }
+  header.topbar h1 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: var(--ink);
+    letter-spacing: 1px;
+    flex: 1;
+    line-height: 1.2;
+  }
+  header.topbar .sub {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--ink-2);
+    line-height: 1;
+    margin-top: 4px;
+    display: block;
+  }
+
+  .hud-chip {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    padding: 8px 10px;
+    border: 3px solid var(--ink);
+    background: var(--ui-bg);
+    box-shadow: 3px 3px 0 0 rgba(0,0,0,.35);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Village/action panel */
+  .village-panel {
+    background: var(--ui-bg);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 0 rgba(0,0,0,.35);
+    margin-top: 14px;
+    padding: 14px;
+  }
+  .village-panel .row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  .village-panel .title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .village-panel .subtitle {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--ink-2);
+    line-height: 1;
+  }
+
+  /* Critter roster */
+  .roster {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .critter {
+    border: 3px solid var(--ink);
+    background: var(--ui-bg);
+    box-shadow: 3px 3px 0 0 rgba(0,0,0,.35);
+    padding: 8px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--ink);
+    transition: transform 80ms ease;
+    user-select: none;
+  }
+  .critter:hover { transform: translate(0, -2px); }
+  .critter.fire  { background: #ffd8b8; }
+  .critter.leaf  { background: #d0f0a8; }
+  .critter.spark { background: #fce890; }
+  .critter.shine { background: #e8c8f0; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    top: 20px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--spark-2);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    padding: 12px 16px;
+    border: 3px solid var(--spark);
+    box-shadow: 4px 4px 0 0 rgba(0,0,0,.5);
+    z-index: 100;
+    animation: toastIn 200ms ease-out;
+  }
+  @keyframes toastIn { from { transform: translate(-50%, -20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+
+  /* blink */
+  @keyframes blink { 50% { opacity: 0; } }
+  .blink { animation: blink 1s steps(2) infinite; }
+
+  /* subtle water shimmer */
+  @keyframes shimmer {
+    0%   { background-position: 0 0, 0 0; }
+    100% { background-position: 16px 0, 0 0; }
+  }
+  .water-tile { animation: shimmer 2s steps(4) infinite; background-size: 8px 8px, 100% 100%; }
+
+  /* bouncing village icon */
+  @keyframes hop {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-2px); }
+  }
+  .hop { animation: hop 1s steps(2) infinite; }
+
+  /* Rest button row */
+  .rest-btn {
+    width: 100%;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    padding: 14px;
+    background: var(--leaf-2);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 0 var(--ink);
+    cursor: pointer;
+    color: var(--ink);
+    letter-spacing: 1px;
+  }
+  .rest-btn:hover { transform: translate(1px, 1px); box-shadow: 3px 3px 0 0 var(--ink); }
+  .rest-btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 0 var(--ink); }
+  .rest-btn:disabled { filter: grayscale(0.6) brightness(0.92); cursor: not-allowed; }
+
+  .reset-link {
+    display: inline-block;
+    margin-top: 14px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: #b8a8d8;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 4px;
+  }
+  .reset-link:hover { color: var(--spark-2); }
+
+  /* footer label under map */
+  .map-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: #b8a8d8;
+  }
+
+  /* tweaks panel */
+  .tweaks {
+    position: fixed;
+    right: 12px;
+    bottom: 12px;
+    width: 240px;
+    background: var(--ink);
+    color: var(--spark-2);
+    border: 3px solid var(--spark);
+    box-shadow: 4px 4px 0 0 rgba(0,0,0,.6);
+    padding: 12px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    z-index: 200;
+    display: none;
+  }
+  .tweaks.open { display: block; }
+  .tweaks h3 { font-size: 10px; margin-bottom: 10px; color: var(--spark); }
+  .tweaks label { display: block; margin: 8px 0 4px; font-size: 8px; }
+  .tweaks select, .tweaks input[type=range] {
+    width: 100%;
+    background: var(--ink-2);
+    color: var(--spark-2);
+    border: 2px solid var(--spark);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    padding: 4px;
+  }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="env,react">
+  const { useState, useEffect, useMemo, useRef } = React;
+
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "mapPalette": "meadow",
+    "spriteScale": 4,
+    "showGrid": false,
+    "dayTime": "day"
+  }/*EDITMODE-END*/;
+
+  /* ============================================================
+     PIXEL SPRITE ENGINE
+     A sprite is a 2D array of pixel indices → palette of colors.
+     "." = transparent. Renders to inline <div> grid, no canvas.
+     ============================================================ */
+
+  function PixelSprite({ data, palette, scale = 3, className = "", style = {} }) {
+    const w = data[0].length;
+    const h = data.length;
+    return (
+      <div className={"sprite " + className} style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${w}, ${scale}px)`,
+        gridTemplateRows: `repeat(${h}, ${scale}px)`,
+        width: w * scale,
+        height: h * scale,
+        ...style
+      }}>
+        {data.flatMap((row, y) => row.split('').map((ch, x) => (
+          <div key={`${x}-${y}`} style={{
+            background: ch === '.' ? 'transparent' : palette[ch] || 'transparent',
+            width: scale, height: scale
+          }} />
+        )))}
+      </div>
+    );
+  }
+
+  /* =============== Critter Sprites (ORIGINAL designs) =============== */
+
+  // Voltpip (spark) — yellow spiky blob with bolt mark
+  const VOLTPIP = {
+    data: [
+      "....11....",
+      "...1221...",
+      "..122221..",
+      ".12232221.",
+      ".12233221.",
+      "12222222221".padEnd(10, '.').slice(0,10),
+      "14422244..",  // feet
+      ".122222...",
+      "..1..1....",
+      ".3....3...",
+    ],
+    palette: { '1': '#f4c430', '2': '#fce078', '3': '#1a1420', '4': '#e08800' }
+  };
+
+  // Cleaner Voltpip
+  const VOLTPIP_S = {
+    data: [
+      "..1..1....",
+      ".121.121..",
+      ".1221221..",
+      "12222222..",
+      "12232232..",
+      "12222222..",
+      "12222222..",
+      ".144244...",
+      "..3..3....",
+    ],
+    palette: { '1': '#d8a820', '2': '#fce078', '3': '#1a1420', '4': '#a87800' }
+  };
+
+  // Leafling (leaf) — green blob with sprout
+  const LEAFLING = {
+    data: [
+      "....5.....",
+      "...555....",
+      "..11111...",
+      ".1122211..",
+      ".1222221..",
+      "112333211.",
+      "11223321..",
+      ".1122211..",
+      "..4...4...",
+      "..3...3...",
+    ],
+    palette: { '1': '#4a8030', '2': '#8fc758', '3': '#1a1420', '4': '#2d5020', '5': '#6fb544' }
+  };
+
+  // Emberpup (fire) — red/orange pup with flame tuft
+  const EMBERPUP = {
+    data: [
+      "....5.....",
+      "...555....",
+      "..11.11...",
+      ".1122211..",
+      "112222211.",
+      "11232232..",  // eyes
+      "11222222..",
+      "11244422..",  // mouth
+      ".1.1.1.1..",
+      "..3...3...",
+    ],
+    palette: { '1': '#c83820', '2': '#e54b4b', '3': '#1a1420', '4': '#f89040', '5': '#ffc040' }
+  };
+
+  // Sparklet (shine) — purple star critter
+  const SPARKLET = {
+    data: [
+      "....5.....",
+      "...151....",
+      "..11111...",
+      ".1122211..",
+      "112332211.",  // eyes
+      "112222211.",
+      ".12222221.",
+      "..123321..",
+      "..1...1...",
+      ".5.....5..",
+    ],
+    palette: { '1': '#8040a8', '2': '#b572d9', '3': '#1a1420', '4': '#5020a0', '5': '#f4c430' }
+  };
+
+  /* =============== Map tile sprites =============== */
+
+  // Village (house)
+  const HOUSE = {
+    data: [
+      "....11....",
+      "...1221...",
+      "..122221..",
+      ".12222221.",
+      "122222221.",
+      "33333333..",
+      "3.44.443..",
+      "3.44.443..",
+      "3344.4.3..",
+      "33333333..",
+    ],
+    palette: { '1': '#e54b4b', '2': '#f89040', '3': '#a87848', '4': '#6b4020' }
+  };
+
+  // Forest (pine tree)
+  const TREE = {
+    data: [
+      "....3.....",
+      "...333....",
+      "..33333...",
+      ".3333333..",
+      "..33333...",
+      ".3333333..",
+      "33333333..",
+      "...4.4....",
+      "...4.4....",
+      "...444....",
+    ],
+    palette: { '3': '#2d5020', '4': '#6b4020' }
+  };
+
+  // Sunflower (garden)
+  const FLOWER = {
+    data: [
+      "...121....",
+      "..12321...",
+      ".1232321..",
+      ".1233321..",
+      "..12321...",
+      "...141....",
+      "....4.....",
+      "...444....",
+      "....4.....",
+      "....4.....",
+    ],
+    palette: { '1': '#f4c430', '2': '#fce078', '3': '#e08800', '4': '#4a7c2a' }
+  };
+
+  // Water droplet (pond)
+  const DROP = {
+    data: [
+      "....11....",
+      "....12....",
+      "...1122...",
+      "...1222...",
+      "..122222..",
+      ".1222222..",
+      ".1222233..",
+      ".1222223..",
+      "..122223..",
+      "...2223...",
+    ],
+    palette: { '1': '#8fe0f0', '2': '#4ab8d8', '3': '#2870a8' }
+  };
+
+  // Beach umbrella
+  const UMBRELLA = {
+    data: [
+      "....1.....",
+      "..12121...",
+      ".1121211..",
+      "121212121.",
+      "1111111111",
+      "....1.....",
+      "....1.....",
+      "....1.....",
+      "....31....",
+      "...33.....",
+    ],
+    palette: { '1': '#e54b4b', '2': '#fce078', '3': '#6b4020' }
+  };
+
+  // Tower (lightning rod)
+  const TOWER = {
+    data: [
+      "....5.....",
+      "...535....",
+      "....5.....",
+      "...333....",
+      "..33333...",
+      "..3.3.3...",
+      "..33333...",
+      "..3.3.3...",
+      "..33333...",
+      ".3333333..",
+    ],
+    palette: { '3': '#786c68', '5': '#f4c430' }
+  };
+
+  // Campfire
+  const CAMPFIRE = {
+    data: [
+      "....1.....",
+      "...121....",
+      "..12221...",
+      ".1232321..",
+      "..12321...",
+      "...111....",
+      "..33333...",
+      ".33444433.",
+      "44444444..",
+      "33333333..",
+    ],
+    palette: { '1': '#e54b4b', '2': '#f89040', '3': '#6b4020', '4': '#a87848' }
+  };
+
+  // Rainbow (meadow)
+  const RAINBOW = {
+    data: [
+      "..1111111.",
+      ".11111111.",
+      ".12222221.",
+      "122222221.",
+      "123333321.",
+      "123443321.",
+      "124444421.",
+      "155555551.",
+      "155555551.",
+      "..1.....1.",
+    ],
+    palette: { '1': '#e54b4b', '2': '#f89040', '3': '#f4c430', '4': '#6fb544', '5': '#4ab8d8' }
+  };
+
+  // Volcano
+  const VOLCANO = {
+    data: [
+      "....1.....",
+      "...111....",
+      "...121....",
+      "..11211...",
+      "..32223...",
+      ".3322233..",
+      ".3322233..",
+      "33322233..",
+      "33322233..",
+      "33333333..",
+    ],
+    palette: { '1': '#e54b4b', '2': '#f89040', '3': '#6b4020' }
+  };
+
+  // Icons (small, for HUD)
+  const ICON_FOOT = {
+    data: [
+      "..11..",
+      ".1221.",
+      ".1221.",
+      "112211",
+      "122221",
+      "111111",
+    ],
+    palette: { '1': '#e08800', '2': '#f4c430' }
+  };
+  const ICON_BOOK = {
+    data: [
+      "111111",
+      "121121",
+      "121121",
+      "122221",
+      "121121",
+      "111111",
+    ],
+    palette: { '1': '#6b4020', '2': '#f4e8c8' }
+  };
+  const ICON_PAW = {
+    data: [
+      "22..22",
+      "22..22",
+      "......",
+      ".2222.",
+      "222222",
+      "2.22.2",
+    ],
+    palette: { '2': '#2d5020' }
+  };
+
+  /* =============== Wandering mini-sprites (NPCs & critters) =============== */
+
+  // Villager kid — blue shirt, tan hair
+  const NPC_KID = {
+    data: [
+      ".333.",
+      ".323.",
+      ".121.",
+      "11211",
+      ".111.",
+      ".4.4.",
+      ".4.4.",
+    ],
+    palette: { '1': '#4a78c8', '2': '#f4d8a8', '3': '#a87848', '4': '#3d2b3f' }
+  };
+
+  // Villager with red cap
+  const NPC_CAP = {
+    data: [
+      ".555.",
+      ".525.",
+      ".121.",
+      "11211",
+      ".333.",
+      ".3.3.",
+      ".4.4.",
+    ],
+    palette: { '1': '#6fb544', '2': '#f4d8a8', '3': '#c83820', '4': '#3d2b3f', '5': '#e54b4b' }
+  };
+
+  // Mini critter — tiny chick
+  const MINI_CHICK = {
+    data: [
+      ".11..",
+      "1121.",
+      "11211",
+      ".111.",
+      ".3.3.",
+    ],
+    palette: { '1': '#fce078', '2': '#1a1420', '3': '#e08800' }
+  };
+
+  // Mini critter — bunny
+  const MINI_BUNNY = {
+    data: [
+      "1.1..",
+      "1.1..",
+      ".11..",
+      "1121.",
+      ".111.",
+      ".3.3.",
+    ],
+    palette: { '1': '#f4e8c8', '2': '#1a1420', '3': '#b8a878' }
+  };
+
+  // Mini fish (for pond)
+  const MINI_FISH = {
+    data: [
+      "..11..",
+      ".1121.",
+      "111113",
+      ".1111.",
+      "...1..",
+    ],
+    palette: { '1': '#f89040', '2': '#1a1420', '3': '#e54b4b' }
+  };
+
+  // Butterfly (near garden)
+  const MINI_BUTTERFLY = {
+    data: [
+      "1.2.1",
+      "11211",
+      "11211",
+      "1.2.1",
+    ],
+    palette: { '1': '#b572d9', '2': '#1a1420' }
+  };
+
+  /* =============== Game data =============== */
+
+  const NODES = {
+    village: { x: 50, y: 50, label: 'VILLAGE',  sprite: HOUSE,    element: null,    cost: 0 },
+    beach:   { x: 50, y: 12, label: 'BEACH',    sprite: UMBRELLA, element: 'water', cost: 1 },
+    garden:  { x: 25, y: 30, label: 'GARDEN',   sprite: FLOWER,   element: 'leaf',  cost: 1 },
+    pond:    { x: 75, y: 30, label: 'POND',     sprite: DROP,     element: 'water', cost: 1 },
+    forest:  { x: 10, y: 50, label: 'FOREST',   sprite: TREE,     element: 'leaf',  cost: 1 },
+    tower:   { x: 90, y: 50, label: 'TOWER',    sprite: TOWER,    element: 'spark', cost: 1 },
+    campfire:{ x: 25, y: 70, label: 'CAMPFIRE', sprite: CAMPFIRE, element: 'fire',  cost: 1 },
+    meadow:  { x: 75, y: 70, label: 'MEADOW',   sprite: RAINBOW,  element: 'shine', cost: 1 },
+    volcano: { x: 50, y: 88, label: 'VOLCANO',  sprite: VOLCANO,  element: 'fire',  cost: 1 },
+  };
+
+  // Connections (by key pairs) for drawing roads
+  const CONNECTIONS = [
+    ['village','beach'],
+    ['village','garden'],
+    ['village','pond'],
+    ['village','forest'],
+    ['village','tower'],
+    ['village','campfire'],
+    ['village','meadow'],
+    ['village','volcano'],
+    ['garden','beach'], ['beach','pond'],
+    ['garden','forest'], ['pond','tower'],
+    ['forest','campfire'], ['tower','meadow'],
+    ['campfire','volcano'], ['meadow','volcano'],
+  ];
+
+  const CRITTERS = [
+    { id: 'voltpip',  name: 'VOLTPIP',   element: 'spark', sprite: VOLTPIP_S },
+    { id: 'leafling', name: 'LEAFLING',  element: 'leaf',  sprite: LEAFLING },
+    { id: 'emberpup', name: 'EMBERPUP',  element: 'fire',  sprite: EMBERPUP },
+    { id: 'sparklet', name: 'SPARKLET',  element: 'shine', sprite: SPARKLET },
+  ];
+
+  const ELEMENT_META = {
+    fire:  { color: '#e54b4b', glyph: 'FIRE',  icon: '▲' },
+    leaf:  { color: '#6fb544', glyph: 'LEAF',  icon: '♣' },
+    spark: { color: '#f4c430', glyph: 'BOLT',  icon: '✦' },
+    shine: { color: '#b572d9', glyph: 'SHINE', icon: '★' },
+    water: { color: '#4ab8d8', glyph: 'WAVE',  icon: '~' }
+  };
+
+  /* =============== The game =============== */
+
+  const STORAGE_KEY = 'critter-quest-state-v1';
+
+  const DEFAULT_STATE = {
+    mp: 5,
+    tasks: 0,
+    activeNode: 'village',
+    counts: { fire: 0, leaf: 0, spark: 0, shine: 0 },
+    caps:   { fire: 6, leaf: 6, spark: 6, shine: 6 },
+  };
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return { ...DEFAULT_STATE, ...JSON.parse(raw) };
+    } catch(e) {}
+    return DEFAULT_STATE;
+  }
+
+  function App() {
+    const [state, setState] = useState(loadState);
+    const [toast, setToast] = useState(null);
+    const [tweaksOpen, setTweaksOpen] = useState(false);
+    const [tweaks, setTweaks] = useState(TWEAK_DEFAULTS);
+
+    useEffect(() => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }, [state]);
+
+    useEffect(() => {
+      function onMsg(e) {
+        if (e.data?.type === '__activate_edit_mode')   setTweaksOpen(true);
+        if (e.data?.type === '__deactivate_edit_mode') setTweaksOpen(false);
+      }
+      window.addEventListener('message', onMsg);
+      window.parent.postMessage({type: '__edit_mode_available'}, '*');
+      return () => window.removeEventListener('message', onMsg);
+    }, []);
+
+    function flash(msg, ms = 1600) {
+      setToast(msg);
+      setTimeout(() => setToast(null), ms);
+    }
+
+    function visitNode(key) {
+      const node = NODES[key];
+      if (!node) return;
+      if (key === 'village') {
+        setState(s => ({ ...s, activeNode: key }));
+        return;
+      }
+      if (!node.element) return;
+      if (state.mp < node.cost) { flash('NOT ENOUGH MP!'); return; }
+      if (state.counts[node.element] >= state.caps[node.element]) {
+        flash(node.label + ' IS FULL!');
+        return;
+      }
+      setState(s => ({
+        ...s,
+        mp: s.mp - node.cost,
+        tasks: s.tasks + 1,
+        activeNode: key,
+        counts: { ...s.counts, [node.element]: s.counts[node.element] + 1 }
+      }));
+      flash('+1 ' + ELEMENT_META[node.element].glyph + '!');
+    }
+
+    function rest() {
+      setState(s => ({ ...s, mp: s.mp + 3 }));
+      flash('REST +3 MP');
+    }
+
+    function reset() {
+      if (!confirm('Reset all village progress?')) return;
+      setState(DEFAULT_STATE);
+      flash('GAME RESET');
+    }
+
+    const elements = ['leaf','spark','fire','shine'];
+    const totalCaptured = elements.reduce((a,k) => a + state.counts[k], 0);
+
+    return (
+      <div>
+        {/* TOP BAR */}
+        <header className="topbar">
+          <div style={{ width: 40, display: 'flex', justifyContent: 'center' }}>
+            <PixelSprite data={HOUSE.data} palette={HOUSE.palette} scale={3} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <h1 className="pixel">ENGLISH<br/>QUEST</h1>
+            <span className="sub">Tasks done: {state.tasks}</span>
+          </div>
+          <div className="hud-chip" style={{ borderColor: '#f4c430', background: '#fff8dc' }}>
+            <PixelSprite data={ICON_FOOT.data} palette={ICON_FOOT.palette} scale={2} />
+            <span>{state.mp}</span>
+          </div>
+          <div className="hud-chip" style={{ borderColor: '#8b5a2b', background: '#f0dcb0' }}>
+            <PixelSprite data={ICON_BOOK.data} palette={ICON_BOOK.palette} scale={2} />
+          </div>
+          <div className="hud-chip" style={{ borderColor: '#6fb544', background: '#e0f4c8' }}>
+            <PixelSprite data={ICON_PAW.data} palette={ICON_PAW.palette} scale={2} />
+            <span>{totalCaptured}</span>
+          </div>
+        </header>
+
+        {/* STATS ROW */}
+        <div className="stats-row">
+          {elements.map(el => (
+            <div key={el} className={`stat-pill ${el}`}>
+              <span style={{ color: ELEMENT_META[el].color, fontSize: 11 }}>{ELEMENT_META[el].icon}</span>
+              <span>{state.counts[el]}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* MAP */}
+        <div className="map-frame">
+          <div className="map-canvas">
+            {/* Sand beach — under the water, framing the beach node */}
+            <div className="sand-tile" style={{
+              left: '22%', top: '1%', width: '56%', height: '22%',
+              zIndex: 0
+            }}/>
+
+            {/* Water pond/sea (top center, sits ON the sand) */}
+            <div className="water-tile" style={{
+              left: '30%', top: '1%', width: '40%', height: '13%',
+              zIndex: 1
+            }}/>
+
+            {/* Tiny footprints on the sand */}
+            {[[35,18],[42,20],[49,19],[56,20],[63,18]].map(([x,y], i) => (
+              <div key={`fp${i}`} style={{
+                position: 'absolute', left: `${x}%`, top: `${y}%`,
+                width: 4, height: 4, background: '#a88844',
+                transform: 'translate(-50%,-50%)', zIndex: 2,
+                boxShadow: '0 -3px 0 0 #a88844'
+              }}/>
+            ))}
+
+            {/* Sand castle on the beach */}
+            <div style={{
+              position: 'absolute', left: '30%', top: '19%',
+              transform: 'translate(-50%,-50%)', zIndex: 2
+            }}>
+              <PixelSprite scale={2} palette={{'1':'#d8b870','2':'#a88844','3':'#e54b4b'}} data={[
+                "..3..",
+                ".111.",
+                "11211",
+                "12221",
+                "11211",
+                "11111",
+              ]}/>
+            </div>
+
+            {/* Seashells */}
+            {[[68,20,'#f89040'],[38,21,'#b572d9'],[58,21,'#e54b4b']].map(([x,y,c], i) => (
+              <div key={`sh${i}`} style={{
+                position:'absolute', left:`${x}%`, top:`${y}%`,
+                transform:'translate(-50%,-50%)', zIndex: 2
+              }}>
+                <PixelSprite scale={1.6} palette={{'1':c, '2':'#fff', '3':'#1a1420'}} data={[
+                  ".11.",
+                  "1211",
+                  "1111",
+                  ".33.",
+                ]}/>
+              </div>
+            ))}
+
+            {/* ===== Wandering NPCs & mini critters ===== */}
+            <div className="walker roam-a">
+              <div><PixelSprite data={NPC_KID.data} palette={NPC_KID.palette} scale={2.4} /></div>
+            </div>
+            <div className="walker roam-b">
+              <div><PixelSprite data={NPC_CAP.data} palette={NPC_CAP.palette} scale={2.4} /></div>
+            </div>
+            <div className="walker roam-c">
+              <div><PixelSprite data={MINI_BUNNY.data} palette={MINI_BUNNY.palette} scale={2} /></div>
+            </div>
+            <div className="walker roam-d">
+              <div><PixelSprite data={MINI_CHICK.data} palette={MINI_CHICK.palette} scale={2} /></div>
+            </div>
+            <div className="walker roam-e">
+              <div><PixelSprite data={MINI_BUTTERFLY.data} palette={MINI_BUTTERFLY.palette} scale={2} /></div>
+            </div>
+
+            {/* Fish in the water */}
+            <div style={{
+              position:'absolute', left:'40%', top:'7%',
+              transform:'translate(-50%,-50%)', zIndex: 2,
+              animation: 'roamE 11s linear infinite'
+            }}>
+              <PixelSprite data={MINI_FISH.data} palette={MINI_FISH.palette} scale={1.8} />
+            </div>
+
+            {/* Decorative trees around edges */}
+            <TreeCluster positions={[
+              [5,15],[12,20],[3,35],[8,62],[4,78],[15,92],
+              [92,10],[88,25],[94,48],[90,80],[85,92],
+              [30,8],[60,8],[40,95],[65,95]
+            ]} />
+
+            {/* Roads */}
+            {CONNECTIONS.map(([a,b], i) => {
+              const A = NODES[a], B = NODES[b];
+              const dx = B.x - A.x, dy = B.y - A.y;
+              const length = Math.sqrt(dx*dx + dy*dy);
+              const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+              return (
+                <div key={i} className="path-line" style={{
+                  left: `${A.x}%`,
+                  top: `${A.y}%`,
+                  width: `${length}%`,
+                  transform: `translateY(-50%) rotate(${angle}deg)`
+                }}/>
+              );
+            })}
+
+            {/* Nodes */}
+            {Object.entries(NODES).map(([key, node]) => {
+              const isActive = state.activeNode === key;
+              const elColor = node.element ? ELEMENT_META[node.element].color : '#fff';
+              return (
+                <div key={key}
+                     className={`node ${isActive ? 'active' : ''}`}
+                     style={{ left: `${node.x}%`, top: `${node.y}%` }}
+                     onClick={() => visitNode(key)}>
+                  <div className="node-tile" style={{
+                    background: node.element ? `${elColor}22` : '#fff4d8'
+                  }}>
+                    <div className={key === 'village' ? 'hop' : ''}>
+                      <PixelSprite data={node.sprite.data} palette={node.sprite.palette} scale={2.6} />
+                    </div>
+                  </div>
+                  <div className="node-label">{node.label}</div>
+                  {node.cost > 0 && (
+                    <div className="node-cost">{node.cost} MP</div>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* Corner badges for each element */}
+            <CornerBadge pos="tl" element="leaf"  count={state.counts.leaf}  cap={state.caps.leaf} />
+            <CornerBadge pos="tr" element="spark" count={state.counts.spark} cap={state.caps.spark} />
+            <CornerBadge pos="bl" element="fire"  count={state.counts.fire}  cap={state.caps.fire} />
+            <CornerBadge pos="br" element="shine" count={state.counts.shine} cap={state.caps.shine} />
+          </div>
+
+          <div className="map-footer">
+            <span className="blink">▶ {NODES[state.activeNode].label}</span>
+            <span>MAP 01 / OVERWORLD</span>
+          </div>
+        </div>
+
+        {/* VILLAGE / ACTION PANEL */}
+        <div className="village-panel">
+          <div className="row">
+            <div style={{
+              width: 64, height: 64,
+              border: '3px solid var(--ink)',
+              background: '#ffe4c4',
+              display: 'grid', placeItems: 'center'
+            }}>
+              <PixelSprite data={HOUSE.data} palette={HOUSE.palette} scale={3} />
+            </div>
+            <div>
+              <div className="title">{NODES[state.activeNode].label}</div>
+              <div className="subtitle">
+                {state.activeNode === 'village' ? '▸ your base camp' :
+                 `▸ ${NODES[state.activeNode].element?.toUpperCase()} region`}
+              </div>
+            </div>
+          </div>
+
+          <button className="rest-btn" onClick={rest}>
+            ♣ REST  +3 MP
+          </button>
+        </div>
+
+        {/* CRITTER ROSTER */}
+        <div className="roster">
+          {CRITTERS.map(c => (
+            <div key={c.id} className={`critter ${c.element}`}
+                 onClick={() => flash('PARTY: ' + c.name)}>
+              <PixelSprite data={c.sprite.data} palette={c.sprite.palette} scale={2.2} />
+              <span>{c.name}</span>
+            </div>
+          ))}
+        </div>
+
+        <button className="reset-link" onClick={reset}>‹ RESET GAME</button>
+
+        {toast && <div className="toast">{toast}</div>}
+
+        {/* TWEAKS PANEL */}
+        <div className={`tweaks ${tweaksOpen ? 'open' : ''}`}>
+          <h3>▸ TWEAKS</h3>
+
+          <label>TIME OF DAY</label>
+          <select value={tweaks.dayTime}
+                  onChange={e => {
+                    const v = e.target.value;
+                    setTweaks(t => ({...t, dayTime: v}));
+                    window.parent.postMessage({type: '__edit_mode_set_keys', edits: {dayTime: v}}, '*');
+                  }}>
+            <option value="day">DAY</option>
+            <option value="dusk">DUSK</option>
+            <option value="night">NIGHT</option>
+          </select>
+
+          <label>PALETTE</label>
+          <select value={tweaks.mapPalette}
+                  onChange={e => {
+                    const v = e.target.value;
+                    setTweaks(t => ({...t, mapPalette: v}));
+                    window.parent.postMessage({type: '__edit_mode_set_keys', edits: {mapPalette: v}}, '*');
+                  }}>
+            <option value="meadow">MEADOW</option>
+            <option value="autumn">AUTUMN</option>
+            <option value="frost">FROST</option>
+          </select>
+
+          <label>SPRITE SCALE: {tweaks.spriteScale}x</label>
+          <input type="range" min="2" max="4" step="1" value={tweaks.spriteScale}
+                 onChange={e => {
+                   const v = Number(e.target.value);
+                   setTweaks(t => ({...t, spriteScale: v}));
+                   window.parent.postMessage({type: '__edit_mode_set_keys', edits: {spriteScale: v}}, '*');
+                 }} />
+
+          <div style={{ marginTop: 10, fontSize: 7, color: '#b8a8d8' }}>
+            ● CLICK TILES TO VISIT<br/>
+            ● SPEND MP AT EACH STOP<br/>
+            ● REST AT VILLAGE TO RECOVER
+          </div>
+        </div>
+
+        {/* Apply palette tweak via style vars */}
+        <style>{`
+          ${tweaks.dayTime === 'dusk' ? `
+            body { background: repeating-linear-gradient(0deg, #2a1820 0 2px, #3a2030 2px 4px) !important; }
+            .map-canvas { filter: hue-rotate(-10deg) brightness(0.9) saturate(1.1); }
+          ` : ''}
+          ${tweaks.dayTime === 'night' ? `
+            body { background: repeating-linear-gradient(0deg, #0a0812 0 2px, #121018 2px 4px) !important; }
+            .map-canvas { filter: brightness(0.55) saturate(1.3) hue-rotate(-20deg); }
+          ` : ''}
+          ${tweaks.mapPalette === 'autumn' ? `
+            .map-canvas { filter: hue-rotate(-30deg) saturate(1.2); }
+          ` : ''}
+          ${tweaks.mapPalette === 'frost' ? `
+            .map-canvas { filter: hue-rotate(160deg) saturate(0.7) brightness(1.05); }
+          ` : ''}
+        `}</style>
+      </div>
+    );
+  }
+
+  function CornerBadge({ pos, element, count, cap }) {
+    const meta = ELEMENT_META[element];
+    return (
+      <div className={`corner-badge ${pos}`}>
+        <span style={{ color: meta.color, fontSize: 14, lineHeight: 1 }}>{meta.icon}</span>
+        <span className="count">{count}/{cap}</span>
+      </div>
+    );
+  }
+
+  function TreeCluster({ positions }) {
+    return positions.map(([x, y], i) => (
+      <div key={i} className="decor" style={{ left: `${x}%`, top: `${y}%`, transform: 'translate(-50%,-50%)' }}>
+        <PixelSprite data={TREE.data} palette={TREE.palette} scale={1.5 + (i % 3) * 0.3} />
+      </div>
+    ));
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
