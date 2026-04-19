@@ -1,0 +1,258 @@
+{
+  "$schema": "https://critter-quest.dev/schemas/tasks-v1.json",
+  "version": "1.0.0",
+  "name": "English Quest — Task Library",
+  "description": "Portable English-learning task collection for kids (ages 8-10). Three difficulty levels (easy/medium/hard) plus EN/PL vocabulary pairs. Designed for use in language-learning games.",
+  "author": "tokage87",
+  "license": "MIT",
+  "language": {
+    "source": "en",
+    "target": "pl"
+  },
+
+  "schema": {
+    "easy": {
+      "type": "fill-in-the-blank",
+      "description": "Fill the blank ___ in a sentence with the correct word from 4 options.",
+      "fields": {
+        "sentence": "Full sentence with ___ as the blank placeholder",
+        "correct": "The correct word to fill the blank",
+        "distractors": "Array of 3 wrong options (plausible but incorrect)"
+      }
+    },
+    "medium": {
+      "type": "sentence-ordering",
+      "description": "Given a set of words (correct + distractors), arrange the correct ones into a valid sentence.",
+      "fields": {
+        "topic": "Short hint about what the sentence is about",
+        "words": "Correct words in the canonical order",
+        "distractors": "Extra words that must NOT be used",
+        "alternatives": "Optional: array of valid alternative orderings"
+      },
+      "validation": "Accept any arrangement of words from `words` (no `distractors`), min 3 words. Full correct = all words used. Partial = some words missing."
+    },
+    "hard": {
+      "type": "free-writing",
+      "description": "Open-ended question with sentence starters and a word bank. Student writes an answer.",
+      "fields": {
+        "question": "The prompt/question (may cover multiple aspects of a topic)",
+        "starters": "Clickable sentence starters that insert into the answer",
+        "wordBank": "Suggested vocabulary words for the answer"
+      },
+      "validation": "Always accept (writing practice). Minimum 3 words."
+    },
+    "vocabulary": {
+      "type": "translation-pair",
+      "description": "English ↔ Polish word/phrase pair, used for matching games.",
+      "fields": {
+        "en": "English word or phrase",
+        "pl": "Polish translation"
+      }
+    }
+  },
+
+  "easy": [
+    { "sentence": "My name ___ Tom.", "correct": "is", "distractors": ["are", "has", "do"] },
+    { "sentence": "She ___ brown hair.", "correct": "has", "distractors": ["is", "are", "do"] },
+    { "sentence": "I ___ to school every day.", "correct": "go", "distractors": ["goes", "going", "went"] },
+    { "sentence": "He ___ very funny.", "correct": "is", "distractors": ["are", "has", "do"] },
+    { "sentence": "We ___ football after school.", "correct": "play", "distractors": ["plays", "playing", "played"] },
+    { "sentence": "My mum ___ delicious cakes.", "correct": "makes", "distractors": ["make", "making", "made"] },
+    { "sentence": "They ___ my best friends.", "correct": "are", "distractors": ["is", "am", "be"] },
+    { "sentence": "I ___ got a dog.", "correct": "have", "distractors": ["has", "is", "am"] },
+    { "sentence": "She ___ swimming.", "correct": "likes", "distractors": ["like", "liking", "liked"] },
+    { "sentence": "The cat ___ on the bed.", "correct": "is", "distractors": ["are", "am", "be"] },
+    { "sentence": "I ___ happy today.", "correct": "am", "distractors": ["is", "are", "be"] },
+    { "sentence": "He ___ to music every day.", "correct": "listens", "distractors": ["listen", "listening", "heard"] },
+    { "sentence": "My room ___ very big.", "correct": "is", "distractors": ["are", "am", "have"] },
+    { "sentence": "We ___ homework after dinner.", "correct": "do", "distractors": ["does", "doing", "did"] },
+    { "sentence": "She ___ English very well.", "correct": "speaks", "distractors": ["speak", "speaking", "spoke"] },
+    { "sentence": "I ___ pizza very much.", "correct": "like", "distractors": ["likes", "liking", "liked"] },
+    { "sentence": "The dog ___ in the garden.", "correct": "plays", "distractors": ["play", "playing", "is"] },
+    { "sentence": "My brother ___ 10 years old.", "correct": "is", "distractors": ["are", "am", "has"] },
+    { "sentence": "They ___ to the park yesterday.", "correct": "went", "distractors": ["go", "goes", "going"] },
+    { "sentence": "I ___ reading books.", "correct": "love", "distractors": ["loves", "loving", "loved"] },
+    { "sentence": "My sister ___ a new bike.", "correct": "has", "distractors": ["have", "is", "are"] },
+    { "sentence": "We ___ in a big house.", "correct": "live", "distractors": ["lives", "living", "lived"] },
+    { "sentence": "He ___ football every Saturday.", "correct": "plays", "distractors": ["play", "playing", "played"] },
+    { "sentence": "The flowers ___ beautiful.", "correct": "are", "distractors": ["is", "am", "has"] },
+    { "sentence": "I ___ to the shop with my mum.", "correct": "go", "distractors": ["goes", "going", "went"] },
+    { "sentence": "I ___ board games.", "correct": "like", "distractors": ["likes", "liking", "liked"] },
+    { "sentence": "We ___ board games after dinner.", "correct": "play", "distractors": ["plays", "playing", "played"] },
+    { "sentence": "My favourite food ___ curry.", "correct": "is", "distractors": ["are", "am", "has"] },
+    { "sentence": "I ___ to try new food.", "correct": "want", "distractors": ["wants", "wanting", "wanted"] },
+    { "sentence": "She ___ to the lake every summer.", "correct": "goes", "distractors": ["go", "going", "went"] },
+    { "sentence": "We ___ Japan last year.", "correct": "visited", "distractors": ["visit", "visits", "visiting"] },
+    { "sentence": "I ___ new places on holiday.", "correct": "love", "distractors": ["loves", "loving", "loved"] },
+    { "sentence": "My dad ___ very well.", "correct": "cooks", "distractors": ["cook", "cooking", "cooked"] },
+    { "sentence": "They ___ to the mountains yesterday.", "correct": "travelled", "distractors": ["travel", "travels", "travelling"] },
+    { "sentence": "I ___ ice cream in summer.", "correct": "eat", "distractors": ["eats", "eating", "ate"] },
+    { "sentence": "She ___ her homework before dinner.", "correct": "does", "distractors": ["do", "doing", "did"] },
+    { "sentence": "We ___ a great time at the party.", "correct": "had", "distractors": ["have", "has", "having"] },
+    { "sentence": "The teacher ___ us new words.", "correct": "teaches", "distractors": ["teach", "teaching", "taught"] },
+    { "sentence": "I ___ my grandparents every weekend.", "correct": "visit", "distractors": ["visits", "visiting", "visited"] },
+    { "sentence": "He ___ a sandwich for lunch.", "correct": "eats", "distractors": ["eat", "eating", "ate"] }
+  ],
+
+  "medium": [
+    { "topic": "Describe your friend", "words": ["My","friend","is","very","kind"], "distractors": ["the","has"] },
+    { "topic": "Say your friend's age", "words": ["My","best","friend","is","ten","years","old"], "distractors": ["has"] },
+    { "topic": "Say what you do with your friend", "words": ["I","like","playing","games","with","my","friend"], "distractors": ["is"] },
+    { "topic": "Say what you like", "words": ["I","like","playing","with","my","dog"], "distractors": ["is"] },
+    { "topic": "Talk about board games", "words": ["I","like","playing","board","games","with","my","family"], "distractors": ["is"] },
+    { "topic": "Describe after school", "words": ["After","school","I","play","games","with","my","sister"], "distractors": ["is"] },
+    { "topic": "Say where you went", "words": ["Last","summer","I","went","to","the","beach"], "distractors": ["has"] },
+    { "topic": "Talk about holiday plans", "words": ["On","holiday","I","like","going","to","the","lake"], "distractors": ["are"] },
+    { "topic": "Talk about a trip", "words": ["Last","holiday","I","visited","Japan","with","my","family"], "distractors": ["is"] },
+    { "topic": "Talk about sightseeing", "words": ["I","like","seeing","new","places","on","holiday"], "distractors": ["are"] },
+    { "topic": "Talk about favourite food", "words": ["My","favourite","food","is","curry","with","rice"], "distractors": ["are"], "alternatives": [["My","favourite","food","is","rice","with","curry"]] },
+    { "topic": "Talk about trying new food", "words": ["I","like","trying","new","food","on","holiday"], "distractors": ["is"] },
+    { "topic": "Talk about food", "words": ["I","ate","pizza","for","lunch","today"], "distractors": ["is"] },
+    { "topic": "Describe your morning", "words": ["I","wake","up","at","seven","o'clock"], "distractors": ["has","the"] },
+    { "topic": "Talk about your morning", "words": ["Every","morning","I","eat","breakfast","and","go","to","school"], "distractors": ["is"] },
+    { "topic": "Talk about school", "words": ["My","favourite","subject","is","English"], "distractors": ["are"] },
+    { "topic": "Describe your teacher", "words": ["My","teacher","is","very","nice","and","helpful"], "distractors": ["am"], "alternatives": [["My","teacher","is","helpful","and","very","nice"]] },
+    { "topic": "Describe the weather", "words": ["It","was","sunny","and","very","hot"], "distractors": ["is"], "alternatives": [["It","was","very","hot","and","sunny"]] },
+    { "topic": "Describe your room", "words": ["My","room","is","small","but","cozy"], "distractors": ["are"], "alternatives": [["My","room","is","cozy","but","small"]] },
+    { "topic": "Say what happened", "words": ["We","played","football","and","had","fun"], "distractors": ["is"], "alternatives": [["We","had","fun","and","played","football"]] },
+    { "topic": "Describe a party", "words": ["We","had","a","great","time","at","the","party"], "distractors": ["is"] },
+    { "topic": "Talk about your pet", "words": ["My","dog","is","brown","and","very","friendly"], "distractors": ["are"], "alternatives": [["My","dog","is","very","friendly","and","brown"]] },
+    { "topic": "Describe a person", "words": ["She","has","long","hair","and","blue","eyes"], "distractors": ["is"], "alternatives": [["She","has","blue","eyes","and","long","hair"]] },
+    { "topic": "Talk about your hobby", "words": ["I","love","drawing","pictures","of","animals"], "distractors": ["is"] },
+    { "topic": "Describe a walk", "words": ["I","like","walking","in","the","park","with","my","dog"], "distractors": ["are"], "alternatives": [["I","like","walking","with","my","dog","in","the","park"]] },
+    { "topic": "Talk about the weekend", "words": ["On","Sunday","we","went","to","the","park"], "distractors": ["is"] },
+    { "topic": "Talk about grandparents", "words": ["I","visit","my","grandparents","every","weekend"], "distractors": ["is"] },
+    { "topic": "Say how you feel", "words": ["I","am","very","happy","and","excited"], "distractors": ["is","has"], "alternatives": [["I","am","excited","and","very","happy"]] },
+    { "topic": "Describe your family", "words": ["My","family","is","big","and","very","kind"], "distractors": ["are"], "alternatives": [["My","family","is","very","kind","and","big"]] },
+    { "topic": "Talk about cooking", "words": ["My","dad","cooks","delicious","food","every","day"], "distractors": ["is"] }
+  ],
+
+  "hard": [
+    {
+      "question": "Describe your best friend in detail: what do they look like, how old are they, what do you like doing together?",
+      "starters": ["My best friend is", "We like to", "He/She has", "We have been friends"],
+      "wordBank": ["tall","short","hair","eyes","funny","kind","years","old","play","games","school","together","since","always"]
+    },
+    {
+      "question": "What do you do after school? Describe your afternoon step by step.",
+      "starters": ["After school I", "First I", "Then I usually", "In the evening I"],
+      "wordBank": ["homework","play","eat","outside","friends","watch","read","walk","games","board","family","dinner"]
+    },
+    {
+      "question": "Describe your last holiday: where did you go, what did you do, what was the best part?",
+      "starters": ["On my last holiday", "We went to", "The best part was", "I really enjoyed"],
+      "wordBank": ["beach","mountains","lake","swam","played","sunny","family","ate","fun","travelled","visited","amazing","beautiful"]
+    },
+    {
+      "question": "Why do you like learning English? What is fun about it?",
+      "starters": ["I like English because", "English is fun because", "I enjoy learning English"],
+      "wordBank": ["interesting","speak","learn","songs","games","teacher","words","stories","films","friends","travel","understand"]
+    },
+    {
+      "question": "Describe your favourite place. What does it look like? Why do you like it? What do you do there?",
+      "starters": ["My favourite place is", "I love going there because", "When I am there I"],
+      "wordBank": ["park","beach","garden","beautiful","quiet","play","relax","happy","trees","water","peaceful","friends"]
+    },
+    {
+      "question": "What do you usually eat? Describe your favourite meal and why you like it.",
+      "starters": ["My favourite food is", "I usually eat", "I like it because"],
+      "wordBank": ["curry","pizza","rice","chicken","delicious","tasty","warm","spicy","sweet","lunch","dinner","mum","cooks"]
+    },
+    {
+      "question": "Look out of your window and describe what you see. What is happening outside?",
+      "starters": ["From my window I can see", "Outside there is", "Right now I see"],
+      "wordBank": ["trees","cars","garden","sky","buildings","people","birds","flowers","clouds","sun","rain","children","playing"]
+    },
+    {
+      "question": "Talk about your favourite animal. What does it look like? Where does it live? Why do you like it?",
+      "starters": ["My favourite animal is", "I love them because", "They live in"],
+      "wordBank": ["cute","fast","strong","big","friendly","beautiful","smart","funny","forest","ocean","farm","wild"]
+    },
+    {
+      "question": "Describe your typical day from morning to evening.",
+      "starters": ["Every day I", "In the morning I", "After school I", "In the evening I"],
+      "wordBank": ["wake up","breakfast","school","lunch","homework","play","dinner","bed","brush","walk","read","watch"]
+    },
+    {
+      "question": "Describe your best memory. What happened? Who was there? How did you feel?",
+      "starters": ["My best memory is", "I remember when", "Everyone was", "I felt so"],
+      "wordBank": ["birthday","holiday","surprise","happy","family","laughed","special","amazing","friends","cake","presents","excited"]
+    },
+    {
+      "question": "Describe your family: who are they, what do they look like, what do you like doing together?",
+      "starters": ["My family is", "My mum/dad is", "We like to", "On weekends we"],
+      "wordBank": ["big","small","kind","funny","tall","cook","play","walk","watch","together","sister","brother","parents","love"]
+    },
+    {
+      "question": "What do you like to do on holiday? Describe your perfect holiday.",
+      "starters": ["On my perfect holiday", "I would like to", "Every day I would", "The best thing is"],
+      "wordBank": ["beach","lake","mountains","swim","explore","eat","ice cream","new","places","relax","sunny","friends","family","travel"]
+    },
+    {
+      "question": "Talk about your favourite game. How do you play it? Who do you play with?",
+      "starters": ["My favourite game is", "I play it with", "The rules are", "I like it because"],
+      "wordBank": ["board","card","video","family","friends","fun","exciting","win","lose","turns","team","together","easy","difficult"]
+    },
+    {
+      "question": "Describe your school: what does it look like, what subjects do you have, what do you like about it?",
+      "starters": ["My school is", "My favourite subject is", "I like my school because", "The teachers are"],
+      "wordBank": ["big","small","friendly","English","maths","art","sport","nice","learn","friends","playground","classroom","fun"]
+    },
+    {
+      "question": "What would you like to be when you grow up? Why?",
+      "starters": ["When I grow up", "I would like to be", "I want this job because", "I think it is"],
+      "wordBank": ["doctor","teacher","artist","scientist","cook","interesting","help","people","animals","create","travel","learn","important","exciting"]
+    }
+  ],
+
+  "vocabulary": [
+    { "en": "kind", "pl": "miły" },
+    { "en": "brave", "pl": "odważny" },
+    { "en": "funny", "pl": "zabawny" },
+    { "en": "tall", "pl": "wysoki" },
+    { "en": "friend", "pl": "przyjaciel" },
+    { "en": "holiday", "pl": "wakacje" },
+    { "en": "breakfast", "pl": "śniadanie" },
+    { "en": "beautiful", "pl": "piękny" },
+    { "en": "garden", "pl": "ogród" },
+    { "en": "homework", "pl": "zadanie domowe" },
+    { "en": "favourite", "pl": "ulubiony" },
+    { "en": "weather", "pl": "pogoda" },
+    { "en": "together", "pl": "razem" },
+    { "en": "excited", "pl": "podekscytowany" },
+    { "en": "suddenly", "pl": "nagle" },
+    { "en": "delicious", "pl": "pyszny" },
+    { "en": "mountain", "pl": "góra" },
+    { "en": "castle", "pl": "zamek" },
+    { "en": "island", "pl": "wyspa" },
+    { "en": "forest", "pl": "las" },
+    { "en": "because", "pl": "ponieważ" },
+    { "en": "always", "pl": "zawsze" },
+    { "en": "sometimes", "pl": "czasami" },
+    { "en": "usually", "pl": "zwykle" },
+    { "en": "swimming", "pl": "pływanie" },
+    { "en": "painting", "pl": "malowanie" },
+    { "en": "tired", "pl": "zmęczony" },
+    { "en": "angry", "pl": "zły" },
+    { "en": "scared", "pl": "przestraszony" },
+    { "en": "proud", "pl": "dumny" },
+    { "en": "board game", "pl": "gra planszowa" },
+    { "en": "lake", "pl": "jezioro" },
+    { "en": "curry", "pl": "curry" },
+    { "en": "to try", "pl": "próbować" },
+    { "en": "to travel", "pl": "podróżować" },
+    { "en": "to visit", "pl": "odwiedzać" },
+    { "en": "to cook", "pl": "gotować" },
+    { "en": "grandparents", "pl": "dziadkowie" },
+    { "en": "science", "pl": "nauka" },
+    { "en": "difficult", "pl": "trudny" }
+  ],
+
+  "stats": {
+    "easy": 40,
+    "medium": 30,
+    "hard": 15,
+    "vocabulary": 40,
+    "total": 125
+  }
+}
